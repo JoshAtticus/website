@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JoshAtticus</title>
+    <title>JoshAtticus | programaWeb Syntax</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         body {
@@ -14,6 +14,9 @@
             padding: 0;
             box-sizing: border-box;
             transition: background-color 0.5s, color 0.5s;
+        }
+        a {
+            color:#00c8ff;
         }
         body.dark-mode {
             background-color: #333;
@@ -72,34 +75,147 @@
 <body>
 
 <header>
-    <h1><marquee>welcome to my website!</marquee></h1>
+    <h1><marquee scrollamount="10">programaWeb Syntax</marquee></h1>
 </header>
+
 <nav>
     <a href="/">Home</a>
     <a href="/projects/index.html">Projects</a>
 </nav>
 
+
 <main>
     <section>
-        <h2>About Me</h2>
+        <h2>title("Text")</h2>
         <p>
-            Hello, I'm JoshAtticus! This is my personal website where I share my thoughts, projects, and interests.
+            Title shown on browser tab and to search engines
         </p>
     </section>
 
     <section>
-        <h2>Projects</h2>
+        <h2>meta-description("Text")</h2>
         <p>
-            Explore my latest projects and creations. Stay tuned for exciting updates!
+            Description shown to search engines
         </p>
     </section>
 
     <section>
-        <h2>Contact</h2>
+        <h2>meta-categories("Category 1", "Category 2")</h2>
         <p>
-            Feel free to reach out to me via email at josh@joshatticus.online.
+            Categories shown to search engines
         </p>
     </section>
+
+    <section>
+        <h2>multiply(number1, number2, etc)</h2>
+        <p>
+            Uses multiplication to multiply the numbers specified. Use comma separated arrays for the numbers
+        </p>
+    </section>
+
+    <section>
+        <h2>h1("Text")</h2>
+        <p>
+            Header 1
+        </p>
+    </section>
+
+    <section>
+        <h2>h2("Text")</h2>
+        <p>
+            Header 2
+        </p>
+    </section>
+
+    <section>
+        <h2>h3("Text")</h2>
+        <p>
+            Header 3
+        </p>
+    </section>
+
+    <section>
+        <h2>h4("Text")</h2>
+        <p>
+            Header 4
+        </p>
+    </section>
+
+    <section>
+        <h2>h5("Text")</h2>
+        <p>
+            Header 5
+        </p>
+    </section>
+
+    <section>
+        <h2>h6("Text")</h2>
+        <p>
+            Header 6
+        </p>
+    </section>
+
+    <section>
+        <h2>text("Text")</h2>
+        <p>
+            Adds paragraph text
+        </p>
+    </section>
+
+    <section>
+        <h2>line()</h2>
+        <p>Adds a breakline (like the hr element in HTML)</p>
+    </section>
+
+    <section>
+        <h2>linebreak()</h2>
+        <p>
+            Adds a linebreak (like the br element in HTML)
+        </p>
+    </section>
+
+    <section>
+        <h2>image("URL", "Optional alt text")</h2>
+        <p>
+            Adds an image from URL with optional alt text
+        </p>
+    </section>
+
+    <section>
+        <h2>link("URL", "Title")</h2>
+        <p>
+            Adds a link. If no title is provided, the URL is used as the title
+        </p>
+    </section>
+
+    <section>
+        <h2>customStyle("CSS style")</h2>
+        <p>
+            Applies a CSS style to the entire page
+        </p>
+    </section>
+
+    <section>
+        <h2>aiStyle("Style description") (For use with programaGPT only)</h2>
+        <p>
+            Logs text to console in blue bold text with 🛈 icon at the start
+        </p>
+    </section>
+
+    <section>
+        <h2>customJS("JavaScript code")</h2>
+        <p>
+            Adds custom JavaScript code to page
+        </p>
+    </section>
+
+    <section>
+        <h2>aiJS("JavaScript code description") (For use with programaGPT only)</h2>
+        <p>
+            Generate JavaScript code to add to the page based on user description.
+        </p>
+    </section>
+
 </main>
 
 <footer>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JoshAtticus | programaCode Syntax</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: #333;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.5s, color 0.5s;
+        }
+        a {
+            color:#00c8ff;
+        }
+        body.dark-mode {
+            background-color: #333;
+            color: white;
+        }
+        header {
+            background-color: #66e21e;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        main {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        footer {
+            background-color: #3d3d3d;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        .dark-mode-toggle {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 24px;
+            color: white; /* Set the icon color to white */
+        }
+        .dark-mode-toggle:hover {
+            color: #f6ff00; /* Change color on hover */
+        }
+
+        nav {
+            background-color: #3d3d3d;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+        }
+
+        nav a:hover {
+            color: #66e21e; /* Change color on hover */
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1><marquee scrollamount="10">programaCode Syntax</marquee></h1>
+</header>
+
+<nav>
+    <a href="/">Home</a>
+    <a href="/projects/index.html">Projects</a>
+</nav>
+
+
+<main>
+    <section>
+        <h2>repeat(number)</h2>
+        <p>
+            Repeats something the specified amount of times
+        </p>
+    </section>
+
+    <section>
+        <h2>speak("text")</h2>
+        <p>
+            Speak something specified in between the brackets and quotation marks
+        </p>
+    </section>
+
+    <section>
+        <h2>add(number1, number 2, etc)</h2>
+        <p>
+            Uses addition to add the numbers specified. Use comma separated arrays for the numbers
+        </p>
+    </section>
+
+    <section>
+        <h2>multiply(number1, number2, etc)</h2>
+        <p>
+            Uses multiplication to multiply the numbers specified. Use comma separated arrays for the numbers
+        </p>
+    </section>
+
+    <section>
+        <h2>divide(number1, number2, etc)</h2>
+        <p>
+            Uses division to divide the numbers specified. Use comma separated arrays for the numbers
+        </p>
+    </section>
+
+    <section>
+        <h2>subtract(number1, number2, etc)</h2>
+        <p>
+            Uses subtraction to subtract the numbers specified. Use comma separated arrays for the numbers
+        </p>
+    </section>
+
+    <section>
+        <h2>random(min, max)</h2>
+        <p>
+            Outputs a random number between the specified min and max
+        </p>
+    </section>
+
+    <section>
+        <h2>ask("prompt", "output variable")</h2>
+        <p>
+            Asks for input, first variable inside ask command is the prompt shown to user, second variable (if present) is which variable the output should go to.
+        </p>
+    </section>
+
+    <section>
+        <h2>set("variable to change/set", "data to set it to")</h2>
+        <p>
+            Sets or defines a variable with specific data.
+        </p>
+    </section>
+
+    <section>
+        <h2>exit(success/fail)</h2>
+        <p>
+            Ends code with error 0 or 1 depending on success of failure. Not needed for code to work
+        </p>
+    </section>
+
+    <section>
+        <h2>get("url")</h2>
+        <p>
+            Gets the contents of a URL. 
+        </p>
+    </section>
+
+    <section>
+        <h2>download("file url", "download path optional")</h2>
+        <p>
+            Downloads a file from URL to the path where the script is running except when a download path is specified
+        </p>
+    </section>
+
+    <section>
+        <h2>wait(number)</h2>
+        <p>
+            Waits a specified period of time before running next commands
+        </p>
+    </section>
+
+    <section>
+        <h2>system("command")</h2>
+        <p>
+            Runs a command on the system. 
+        </p>
+    </section>
+
+    <section>
+        <h2>forever()</h2>
+        <p>
+            Will run anything under the forever() line until the program is terminated.
+        </p>
+    </section>
+
+    <section>
+        <h2>typewriter("text")</h2>
+        <p>
+            Writes text like a typewriter with 0.1 second delay between characters
+        </p>
+    </section>
+
+    <section>
+        <h2>log("text")</h2>
+        <p>
+            Logs text to console in blue bold text with 🛈 icon at the start
+        </p>
+    </section>
+
+    <section>
+        <h2>warn("warning")</h2>
+        <p>
+            Logs a warning to console in yellow bold text with ⚠ icon at the start
+        </p>
+    </section>
+
+    <section>
+        <h2>error("error message")</h2>
+        <p>
+            Logs an error to console in red bold text with ✕ icon at the start
+        </p>
+    </section>
+
+    <section>
+        <h2>success("success message")</h2>
+        <p>
+            Logs a success to console in green bold text with ✓ icon at the start
+        </p>
+    </section>
+
+    <section>
+        <h2>Custom Functions (for use with programaGPT only)</h2>
+        <p>
+            Custom functions can be defined like below
+        </p>
+        <p>
+            functionName("string", "number", etc) # what the function does
+        </p>
+    </section>
+
+    <section>
+        <h2>Comments</h2>
+        <p>
+            Anything starting with # is a comment and not part of the code
+        </p>
+    </section>
+</main>
+
+<footer>
+    Created with programaGPT and programaWeb
+</footer>
+
+<div class="dark-mode-toggle" onclick="toggleDarkMode()">
+    <i class="fas fa-sun"></i>
+</div>
+
+<script>
+    // Function to toggle dark mode
+    function toggleDarkMode() {
+        const body = document.body;
+        body.classList.toggle('dark-mode');
+        
+        // Save user's preference to localStorage
+        const isDarkMode = body.classList.contains('dark-mode');
+        localStorage.setItem('darkMode', isDarkMode);
+    }
+
+    // Check user's preferred color scheme and set dark mode accordingly
+    const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const storedDarkMode = localStorage.getItem('darkMode');
+    
+    if (storedDarkMode !== null) {
+        // Use the stored preference if available
+        const body = document.body;
+        body.classList.toggle('dark-mode', JSON.parse(storedDarkMode));
+    } else if (prefersDarkMode) {
+        // Use the system preference if there is no stored preference
+        toggleDarkMode();
+    }
+</script>
+
+</body>
+</html>
