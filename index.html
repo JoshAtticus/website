@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JoshAtticus - Welcome to My Online Space</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: #333;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.5s, color 0.5s;
+        }
+        body.dark-mode {
+            background-color: #333;
+            color: white;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        main {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        .dark-mode-toggle {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 24px;
+            color: white; /* Set the icon color to white */
+        }
+        .dark-mode-toggle:hover {
+            color: #007bff; /* Change color on hover */
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Welcome to JoshAtticus's Online Space</h1>
+</header>
+
+<main>
+    <section>
+        <h2>About Me</h2>
+        <p>
+            Hello, I'm JoshAtticus! This is my personal website where I share my thoughts, projects, and interests.
+        </p>
+    </section>
+
+    <section>
+        <h2>Projects</h2>
+        <p>
+            Explore my latest projects and creations. Stay tuned for exciting updates!
+        </p>
+    </section>
+
+    <section>
+        <h2>Contact</h2>
+        <p>
+            Feel free to reach out to me via email at josh@joshatticus.online.
+        </p>
+    </section>
+</main>
+
+<footer>
+    Created with programaGPT and programaWeb
+</footer>
+
+<div class="dark-mode-toggle" onclick="toggleDarkMode()">
+    <i class="fas fa-sun"></i>
+</div>
+
+<script>
+    // Function to toggle dark mode
+    function toggleDarkMode() {
+        const body = document.body;
+        body.classList.toggle('dark-mode');
+        
+        // Save user's preference to localStorage
+        const isDarkMode = body.classList.contains('dark-mode');
+        localStorage.setItem('darkMode', isDarkMode);
+    }
+
+    // Check user's preferred color scheme and set dark mode accordingly
+    const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const storedDarkMode = localStorage.getItem('darkMode');
+    
+    if (storedDarkMode !== null) {
+        // Use the stored preference if available
+        const body = document.body;
+        body.classList.toggle('dark-mode', JSON.parse(storedDarkMode));
+    } else if (prefersDarkMode) {
+        // Use the system preference if there is no stored preference
+        toggleDarkMode();
+    }
+</script>
+
+</body>
+</html>
