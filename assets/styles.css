@@ -1,0 +1,128 @@
+body,
+html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: #000000;
+    background-image: url("images/bg.jpeg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: #ffffff;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+header {
+    margin-bottom: 60px;
+}
+
+h1 {
+    font-size: 3.5em;
+    margin-bottom: 0;
+}
+
+h2 {
+    font-size: 2.5em;
+    margin-top: 60px;
+}
+
+.subtitle {
+    font-size: 1.5em;
+    opacity: 0.8;
+}
+
+.projects {
+    margin-bottom: 60px;
+}
+
+.project {
+    background: #0000001d;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.project-info {
+    flex-grow: 1;
+}
+
+.project-links a {
+    color: white;
+    text-decoration: none;
+    margin-left: 15px;
+    font-size: 1.5em;
+}
+
+.socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.social-icon {
+    text-align: center;
+}
+
+.social-icon img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+
+.social-icon .platform {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.social-icon .username {
+    font-size: 0.8em;
+    opacity: 0.8;
+}
+
+.shape {
+    position: fixed;
+    z-index: -1;
+}
+
+.circle {
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #150fff, #9942ff);
+    opacity: 0.3;
+}
+
+.square {
+    width: 150px;
+    height: 150px;
+    background: linear-gradient(45deg, #9942ff, #150fff);
+    transform: rotate(45deg);
+    opacity: 0.3;
+}
+
+.cube-icon {
+    width: 40px;
+    height: 40px;
+}
+
+.email {
+    font-size: 1.2em;
+    margin-top: 20px;
+}
+
+.platform, .username, .email {
+    color: #ffffff
+}
