@@ -3,16 +3,16 @@
     "short_name": "JoshAtticus",
     "icons": [
         {
-            "src": "/manifest/android-chrome-192x192.png",
+            "src": "/manifest/android-chrome-192x192.png?v2=true",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "/manifest/android-chrome-384x384.png",
-            "sizes": "384x384",
+            "src": "/manifest/android-chrome-512x512.png?v2=true",
+            "sizes": "512x512",
             "type": "image/png"
         }
     ],
-    "theme_color": "#2d2d2d",
-    "background_color": "#2d2d2d"
+    "theme_color": "#000000",
+    "background_color": "#000000"
 }
