@@ -1,155 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <link rel="apple-touch-icon" sizes="180x180" href="/manifest/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/manifest/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/manifest/favicon-16x16.png">
-    <link rel="manifest" href="/manifest/site.webmanifest">
-    <link rel="mask-icon" href="/manifest/safari-pinned-tab.svg" color="#2d2d2d">
-    <link rel="shortcut icon" href="/manifest/favicon.ico">
-    <meta name="apple-mobile-web-app-title" content="JoshAtticus">
-    <meta name="application-name" content="JoshAtticus">
-    <meta name="msapplication-TileColor" content="#2d2d2d">
-    <meta name="msapplication-TileImage" content="/manifest/mstile-144x144.png">
-    <meta name="msapplication-config" content="/manifest/browserconfig.xml">
-    <meta name="theme-color" content="#2d2d2d">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JoshAtticus</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            color: #333;
-            background-color: #f8f8f8;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            transition: background-color 0.5s, color 0.5s;
-        }
-        a {
-            color:#00c8ff;
-        }
-        body.dark-mode {
-            background-color: #333;
-            color: white;
-        }
-        header {
-            background-color: #66e21e;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-        main {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-        }
-        footer {
-            background-color: #3d3d3d;
-            color: white;
-            text-align: center;
-            padding: 10px;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-        }
-        .dark-mode-toggle {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            cursor: pointer;
-            font-size: 24px;
-            color: white; /* Set the icon color to white */
-        }
-        .dark-mode-toggle:hover {
-            color: #f6ff00; /* Change color on hover */
-        }
-
-        nav {
-            background-color: #3d3d3d;
-            color: white;
-            padding: 10px;
-            text-align: center;
-        }
-
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin: 0 15px;
-        }
-
-        nav a:hover {
-            color: #66e21e; /* Change color on hover */
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles.css">
 </head>
+
 <body>
+    <div class="container">
+        <header>
+            <svg class="cube-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="none" preserveAspectRatio="xMidYMid meet" style="fill: none;" version="1.0" viewBox="2.0 1.0 20.0 22.1" zoomAndPan="magnify" original_string_length="1690"><g id="__id195_sdahp5k9q"><path clip-rule="evenodd" d="M21.5071 5.13813C21.8125 5.31781 22 5.64568 22 6V17.4286C22 17.8051 21.7885 18.1496 21.4529 18.3202L12.4529 22.8916C12.1429 23.049 11.7733 23.0342 11.477 22.8523C11.1806 22.6704 11 22.3477 11 22V11C11 10.6368 11.1969 10.3022 11.5144 10.1258L20.5144 5.12584C20.8241 4.95377 21.2017 4.95844 21.5071 5.13813ZM13 11.5884V20.3705L20 16.8149V7.69951L13 11.5884Z" fill-rule="evenodd" style="fill: rgb(255, 255, 255);"></path></g><g id="__id196_sdahp5k9q"><path clip-rule="evenodd" d="M11.5939 1.08619C11.8524 0.971271 12.1476 0.971271 12.4061 1.08619L21.4061 5.08619C21.7526 5.24017 21.9822 5.57682 21.999 5.95558C22.0159 6.33433 21.8171 6.69004 21.4856 6.87416L12.4856 11.8742C12.1836 12.0419 11.8164 12.0419 11.5144 11.8742L2.51436 6.87416C2.18294 6.69004 1.98415 6.33433 2.00099 5.95558C2.01783 5.57682 2.24741 5.24017 2.59387 5.08619L11.5939 1.08619ZM5.23828 6.09953L12 9.85604L18.7617 6.09953L12 3.09432L5.23828 6.09953Z" fill-rule="evenodd" style="fill: rgb(255, 255, 255);"></path></g><g id="__id197_sdahp5k9q"><path clip-rule="evenodd" d="M2.49287 5.13813C2.18749 5.31781 2 5.64568 2 6V17.4286C2 17.8051 2.21146 18.1496 2.54713 18.3202L11.5471 22.8916C11.8571 23.049 12.2267 23.0342 12.523 22.8523C12.8194 22.6704 13 22.3477 13 22V11C13 10.6368 12.8031 10.3022 12.4856 10.1258L3.48564 5.12584C3.17591 4.95377 2.79825 4.95844 2.49287 5.13813ZM11 11.5884V20.3705L4 16.8149V7.69951L11 11.5884Z" fill-rule="evenodd" style="fill: rgb(255, 255, 255);"></path></g></svg>
+            <h1>Hey there!</h1>
+            <p class="subtitle">I'm JoshAtticus</p>
+        </header>
 
-<header>
-    <h1><marquee>welcome to my website!</marquee></h1>
-</header>
-<nav>
-    <a href="/">Home</a>
-    <a href="/projects/index.html">Projects</a>
-    <a href="/blog/index.html">Blog</a>
-</nav>
+        <section class="projects">
+            <h2>Projects</h2>
+            <div class="project">
+                <div class="project-info">
+                    <strong>Leo for Meower</strong>
+                    <p>An awesome fork of meo with more features</p>
+                </div>
+                <div class="project-links">
+                    <a href="https://github.com/JoshAtticus/leo" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+                    <a href="https://leo.atticat.tech" target="_blank" title="Website"><i class="fas fa-globe"></i></a>
+                </div>
+            </div>
+            <div class="project">
+                <div class="project-info">
+                    <strong>Megi</strong>
+                    <p>A wild chat app appears</p>
+                </div>
+                <div class="project-links">
+                    <a href="https://github.com/JoshAtticus/megi" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+                    <a href="https://megi.atticat.tech" target="_blank" title="Website"><i class="fas fa-globe"></i></a>
+                </div>
+            </div>
+            <div class="project">
+                <div class="project-info">
+                    <strong>AtticusOS</strong>
+                    <p>An awesome webtop with a pleasant UI, text editor, web browser, clock and more!</p>
+                </div>
+                <div class="project-links">
+                    <a href="https://github.com/JoshAtticus/os" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+                    <a href="https://os.atticat.tech" target="_blank" title="Website"><i class="fas fa-globe"></i></a>
+                </div>
+            </div>
+        </section>
 
-<main>
-    <section>
-        <h2>About Me</h2>
-        <p>
-            Hello, I'm JoshAtticus! This is my personal website where I share my projects and blog posts!
-        </p>
-    </section>
+        <h2>Socials & Contact</h2>
+        <section class="socials">
+            <a href="https://discord.gg/3svRDWNr" target="_blank" class="social-icon">
+                <img src="assets/icons/Discord.png" alt="Discord">
+                <div class="platform">Discord</div>
+                <div class="username">@joshatticus</div>
+            </a>
+            <a href="https://github.com/JoshAtticus" target="_blank" class="social-icon">
+                <img src="assets/icons/GitHub.png" alt="GitHub">
+                <div class="platform">GitHub</div>
+                <div class="username">@JoshAtticus</div>
+            </a>
+            <a href="https://leo.atticat.tech?openprofile=JoshAtticus" target="_blank" class="social-icon">
+                <img src="assets/icons/Meower.png" alt="Meower">
+                <div class="platform">Meower</div>
+                <div class="username">@JoshAtticus</div>
+            </a>
+            <a href="https://www.tiktok.com/@atticusjosh" target="_blank" class="social-icon">
+                <img src="assets/icons/TikTok.png" alt="TikTok">
+                <div class="platform">TikTok</div>
+                <div class="username">@atticusjosh</div>
+            </a>
+            <a href="https://twitter.com/AoshJatticus" target="_blank" class="social-icon">
+                <img src="assets/icons/Twitter.png" alt="Twitter">
+                <div class="platform">Twitter</div>
+                <div class="username">@AoshJatticus</div>
+            </a>
+        </section>
 
-    <section>
-        <h2>Projects</h2>
-        <p>
-            There are quite a few projects I am working on! You can check them out from the projects page in the navigation bar.
-        </p>
-    </section>
-
-    <section>
-        <h2>Contact</h2>
-        <p>
-            Feel free to reach out to me via email at <a href="mailto:hey@joshatticus.online">hey@joshatticus.online.</a>
-        </p>
-    </section>
-</main>
-
-<footer>
-    Created with programaGPT and programaWeb
-</footer>
-
-<div class="dark-mode-toggle" onclick="toggleDarkMode()">
-    <i class="fas fa-sun"></i>
-</div>
-
-<script>
-    // Function to toggle dark mode
-    function toggleDarkMode() {
-        const body = document.body;
-        body.classList.toggle('dark-mode');
-        
-        // Save user's preference to localStorage
-        const isDarkMode = body.classList.contains('dark-mode');
-        localStorage.setItem('darkMode', isDarkMode);
-    }
-
-    // Check user's preferred color scheme and set dark mode accordingly
-    const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const storedDarkMode = localStorage.getItem('darkMode');
-    
-    if (storedDarkMode !== null) {
-        // Use the stored preference if available
-        const body = document.body;
-        body.classList.toggle('dark-mode', JSON.parse(storedDarkMode));
-    } else if (prefersDarkMode) {
-        // Use the system preference if there is no stored preference
-        toggleDarkMode();
-    }
-</script>
-
+        <div class="email">
+            <i class="fas fa-envelope"></i> <a href="mailto:joshatticus02@gmail.com" class="email">joshatticus02@gmail.com</a>
+        </div>
+    </div>
 </body>
+
 </html>
