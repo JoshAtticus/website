@@ -3,12 +3,12 @@
     "short_name": "JoshAtticus",
     "icons": [
         {
-            "src": "/manifest/android-chrome-192x192.png?v2=true",
+            "src": "manifest/android-chrome-192x192.png?v2=true",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "/manifest/android-chrome-512x512.png?v2=true",
+            "src": "manifest/android-chrome-512x512.png?v2=true",
             "sizes": "512x512",
             "type": "image/png"
         }
