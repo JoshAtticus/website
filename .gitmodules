@@ -1,0 +1,3 @@
+[submodule "projects/3DTouchScale"]
+	path = projects/3DTouchScale
+	url = https://github.com/JoshAtticus/3DTouchScale
