@@ -1,329 +1,257 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JoshAtticus</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <title>Modern Portfolio</title>
     <link rel="stylesheet" href="assets/styles.css">
-    <script defer data-domain="joshatticus.site" src="https://plausible.joshatticus.site/js/script.file-downloads.outbound-links.js"></script>
-
-    <!-- PWA Manifest -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/manifest/apple-touch-icon.png?v3=true">
-    <link rel="icon" type="image/png" sizes="32x32" href="/manifest/favicon-32x32.png?v3=true">
-    <link rel="icon" type="image/png" sizes="16x16" href="/manifest/favicon-16x16.png?v3=true">
-    <link rel="manifest" href="/manifest/site.webmanifest?v3=true">
-    <link rel="mask-icon" href="/manifest/safari-pinned-tab.svg?v3=true" color="#000000">
-    <link rel="shortcut icon" href="/manifest/favicon.ico?v3=true">
-    <meta name="apple-mobile-web-app-title" content="JoshAtticus">
-    <meta name="application-name" content="JoshAtticus">
-    <meta name="msapplication-TileColor" content="#000000">
-    <meta name="msapplication-TileImage" content="/manifest/mstile-144x144.png?v3=true">
-    <meta name="msapplication-config" content="/manifest/browserconfig.xml?v3=true">
-    <meta name="theme-color" content="#000000">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="manifest/favicon.ico">
 </head>
-
 <body>
-    <div class="page-wrapper">
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <div class="logo">
-                    <svg class="cube-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                        fill="none" preserveAspectRatio="xMidYMid meet" style="fill: none;" version="1.0"
-                        viewBox="2.0 1.0 20.0 22.1" zoomAndPan="magnify" original_string_length="1690">
-                        <g id="__id195_sdahp5k9q">
-                            <path clip-rule="evenodd"
-                                d="M21.5071 5.13813C21.8125 5.31781 22 5.64568 22 6V17.4286C22 17.8051 21.7885 18.1496 21.4529 18.3202L12.4529 22.8916C12.1429 23.049 11.7733 23.0342 11.477 22.8523C11.1806 22.6704 11 22.3477 11 22V11C11 10.6368 11.1969 10.3022 11.5144 10.1258L20.5144 5.12584C20.8241 4.95377 21.2017 4.95844 21.5071 5.13813ZM13 11.5884V20.3705L20 16.8149V7.69951L13 11.5884Z"
-                                fill-rule="evenodd" style="fill: rgb(255, 255, 255);"></path>
-                        </g>
-                        <g id="__id196_sdahp5k9q">
-                            <path clip-rule="evenodd"
-                                d="M11.5939 1.08619C11.8524 0.971271 12.1476 0.971271 12.4061 1.08619L21.4061 5.08619C21.7526 5.24017 21.9822 5.57682 21.999 5.95558C22.0159 6.33433 21.8171 6.69004 21.4856 6.87416L12.4856 11.8742C12.1836 12.0419 11.8164 12.0419 11.5144 11.8742L2.51436 6.87416C2.18294 6.69004 1.98415 6.33433 2.00099 5.95558C2.01783 5.57682 2.24741 5.24017 2.59387 5.08619L11.5939 1.08619ZM5.23828 6.09953L12 9.85604L18.7617 6.09953L12 3.09432L5.23828 6.09953Z"
-                                fill-rule="evenodd" style="fill: rgb(255, 255, 255);"></path>
-                        </g>
-                        <g id="__id197_sdahp5k9q">
-                            <path clip-rule="evenodd"
-                                d="M2.49287 5.13813C2.18749 5.31781 2 5.64568 2 6V17.4286C2 17.8051 2.21146 18.1496 2.54713 18.3202L11.5471 22.8916C11.8571 23.049 12.2267 23.0342 12.523 22.8523C12.8194 22.6704 13 22.3477 13 22V11C13 10.6368 12.8031 10.3022 12.4856 10.1258L3.48564 5.12584C3.17591 4.95377 2.79825 4.95844 2.49287 5.13813ZM11 11.5884V20.3705L4 16.8149V7.69951L11 11.5884Z"
-                                fill-rule="evenodd" style="fill: rgb(255, 255, 255);"></path>
-                        </g>
-                    </svg>
-                    <div class="logo-text">JoshAtticus</div>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-text">Portfolio</span>
+            </div>
+            <div class="nav-menu">
+                <a href="#home" class="nav-link">Home</a>
+                <a href="#about" class="nav-link">About</a>
+                <a href="#projects" class="nav-link">Projects</a>
+                <a href="#contact" class="nav-link">Contact</a>
+            </div>
+            <div class="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section with Animated Grid -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="hero-greeting">Hello, I'm</span>
+                <span class="hero-name">Your Name</span>
+            </h1>
+            <p class="hero-subtitle">
+                Creating amazing digital experiences with modern technology
+            </p>
+            <div class="hero-buttons">
+                <a href="#projects" class="btn btn-primary">View My Work</a>
+                <a href="#contact" class="btn btn-secondary">Get In Touch</a>
+            </div>
+        </div>
+        
+        <!-- Animated Grid Background -->
+        <div class="grid-container">
+            <canvas id="gridCanvas"></canvas>
+        </div>
+        
+        <!-- Floating Elements -->
+        <div class="floating-elements">
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">About Me</h2>
+                <p class="section-subtitle">Passionate about creating innovative solutions</p>
+            </div>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>
+                        I'm a passionate developer who loves creating beautiful and functional digital experiences. 
+                        With expertise in modern web technologies, I focus on building applications that are not 
+                        only visually appealing but also highly performant and user-friendly.
+                    </p>
+                    <p>
+                        My journey in technology has led me to work with various frameworks and tools, 
+                        always staying up-to-date with the latest industry trends and best practices.
+                    </p>
+                    <div class="skills">
+                        <div class="skill-item">
+                            <span class="skill-name">Frontend Development</span>
+                            <div class="skill-bar">
+                                <div class="skill-progress" style="width: 90%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <span class="skill-name">Backend Development</span>
+                            <div class="skill-bar">
+                                <div class="skill-progress" style="width: 85%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <span class="skill-name">UI/UX Design</span>
+                            <div class="skill-bar">
+                                <div class="skill-progress" style="width: 80%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-image">
+                    <div class="image-placeholder">
+                        <div class="image-content">
+                            <span>Your Photo</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <nav class="sidebar-nav">
-                <ul>
-                    <li><a href="#about"><i class="fas fa-user"></i> About</a></li>
-                    <li><a href="#projects"><i class="fas fa-code"></i> Projects</a></li>
-                    <li><a href="#contact"><i class="fas fa-envelope"></i> Contact</a></li>
-                </ul>
-            </nav>
-            <div class="sidebar-footer">
-                <div class="social-icons">
-                    <a href="https://discord.gg/3svRDWNr" target="_blank" title="Discord">
-                        <i class="fab fa-discord"></i>
-                    </a>
-                    <a href="https://github.com/JoshAtticus" target="_blank" title="GitHub">
-                        <i class="fab fa-github"></i>
-                    </a>
-                    <a href="https://youtube.com/@joshatticus" target="_blank" title="YouTube">
-                        <i class="fab fa-youtube"></i>
-                    </a>
-                    <a href="https://www.tiktok.com/@atticusjosh" target="_blank" title="TikTok">
-                        <i class="fab fa-tiktok"></i>
-                    </a>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="projects">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Featured Projects</h2>
+                <p class="section-subtitle">Some of my recent work</p>
+            </div>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <div class="project-image">
+                        <div class="project-overlay">
+                            <div class="project-links">
+                                <a href="#" class="project-link">View Live</a>
+                                <a href="#" class="project-link">Source Code</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="project-content">
+                        <h3 class="project-title">Project One</h3>
+                        <p class="project-description">
+                            A modern web application built with cutting-edge technologies and best practices.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-tag">React</span>
+                            <span class="tech-tag">Node.js</span>
+                            <span class="tech-tag">MongoDB</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-image">
+                        <div class="project-overlay">
+                            <div class="project-links">
+                                <a href="#" class="project-link">View Live</a>
+                                <a href="#" class="project-link">Source Code</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="project-content">
+                        <h3 class="project-title">Project Two</h3>
+                        <p class="project-description">
+                            An innovative solution that showcases modern design principles and functionality.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Vue.js</span>
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">PostgreSQL</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-image">
+                        <div class="project-overlay">
+                            <div class="project-links">
+                                <a href="#" class="project-link">View Live</a>
+                                <a href="#" class="project-link">Source Code</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="project-content">
+                        <h3 class="project-title">Project Three</h3>
+                        <p class="project-description">
+                            A responsive and interactive application with focus on user experience.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Angular</span>
+                            <span class="tech-tag">Express</span>
+                            <span class="tech-tag">MySQL</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </aside>
+        </div>
+    </section>
 
-        <main class="main-content">
-            <section id="about" class="section">
-                <div class="glass-card hero">
-                    <h1>Hey there! <span class="wave">👋</span></h1>
-                    <p class="subtitle">I'm JoshAtticus</p>
-                </div>
-            </section>
-
-            <section id="projects" class="section">
-                <h2 class="section-title">projects</h2>
-                <div class="projects-grid">
-                    <div class="glass-card project-card">
-                        <span class="featured-badge">New!</span>
-                        <div class="project-content">
-                            <h3>neubot</h3>
-                            <p>a simple semantic parsing based chatbot (no llms here!)</p>
-                            <div class="tech-stack">
-                                <span class="tech-badge">Web</span>
-                                <span class="tech-badge">Python</span>
-                                <span class="tech-badge">Chat</span>
-                                <span class="tech-badge">Assistant</span>
-                            </div>
-                        </div>
-                        <div class="project-links">
-                            <a href="https://github.com/JoshAtticus/neubot" target="_blank" class="project-link" title="GitHub">
-                                <i class="fab fa-github"></i>
-                            </a>
-                            <a href="https://neubot.joshatticus.site" target="_blank" class="project-link" title="Website">
-                                <i class="fas fa-external-link-alt"></i>
-                            </a>
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Get In Touch</h2>
+                <p class="section-subtitle">Let's work together on your next project</p>
+            </div>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-icon">📧</div>
+                        <div class="contact-details">
+                            <h4>Email</h4>
+                            <p>your.email@example.com</p>
                         </div>
                     </div>
-
-                    <div class="glass-card project-card">
-                        <div class="project-content">
-                            <h3>NAPBypass</h3>
-                            <p>A project dedicated to finding flaws to escape the NAPLAN locked down browser</p>
-                            <div class="tech-stack">
-                                <span class="tech-badge">Web</span>
-                                <span class="tech-badge">Security</span>
-                                <span class="tech-badge">Mac</span>
-                                <span class="tech-badge">Windows</span>
-                                <span class="tech-badge">iOS</span>
-                                <span class="tech-badge">ChromeOS</span>
-                            </div>
-                        </div>
-                        <div class="project-links">
-                            <a href="https://github.com/JoshAtticus/blog" target="_blank" class="project-link" title="GitHub">
-                                <i class="fab fa-github"></i>
-                            </a>
-                            <a href="https://discord.gg/tQpGvNfY3m" target="_blank" class="project-link" title="Discord">
-                                <i class="fab fa-discord"></i>
-                            </a>
-                            <a href="https://blog.joshatticus.site" target="_blank" class="project-link" title="Website">
-                                <i class="fas fa-external-link-alt"></i>
-                            </a>
+                    <div class="contact-item">
+                        <div class="contact-icon">📱</div>
+                        <div class="contact-details">
+                            <h4>Phone</h4>
+                            <p>+1 (555) 123-4567</p>
                         </div>
                     </div>
-
-                    <div class="glass-card project-card">
-                        <div class="project-content">
-                            <h3>Nova Search</h3>
-                            <p>An open-source search engine with completely independent search results - no third parties</p>
-                            <div class="tech-stack">
-                                <span class="tech-badge">Web</span>
-                                <span class="tech-badge">Python</span>
-                                <span class="tech-badge">API</span>
-                                <span class="tech-badge">Search</span>
-                            </div>
-                        </div>
-                        <div class="project-links">
-                            <a href="https://github.com/Nova-Search" target="_blank" class="project-link" title="GitHub">
-                                <i class="fab fa-github"></i>
-                            </a>
-                            <a href="https://novasearch.xyz" target="_blank" class="project-link" title="Website">
-                                <i class="fas fa-external-link-alt"></i>
-                            </a>
+                    <div class="contact-item">
+                        <div class="contact-icon">📍</div>
+                        <div class="contact-details">
+                            <h4>Location</h4>
+                            <p>Your City, Country</p>
                         </div>
                     </div>
-
-                    <div class="glass-card project-card">
-                        <span class="featured-badge">New!</span>
-                        <div class="project-content">
-                            <h3>Website</h3>
-                            <p>This is the awesome website you're currently on!</p>
-                            <div class="tech-stack">
-                                <span class="tech-badge">Web</span>
-                            </div>
-                        </div>
-                        <div class="project-links">
-                            <a href="https://github.com/JoshAtticus/website" target="_blank" class="project-link" title="GitHub">
-                                <i class="fab fa-github"></i>
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="glass-card project-card">
-                        <div class="project-content">
-                            <h3>Blog</h3>
-                            <p>My awesome little technology blog</p>
-                            <div class="tech-stack">
-                                <span class="tech-badge">Web</span>
-                                <span class="tech-badge">Python</span>
-                            </div>
-                        </div>
-                        <div class="project-links">
-                            <a href="https://github.com/JoshAtticus/blog" target="_blank" class="project-link" title="GitHub">
-                                <i class="fab fa-github"></i>
-                            </a>
-                            <a href="https://blog.joshatticus.site" target="_blank" class="project-link" title="Website">
-                                <i class="fas fa-external-link-alt"></i>
-                            </a>
-                        </div>
+                    <div class="social-links">
+                        <a href="#" class="social-link">GitHub</a>
+                        <a href="#" class="social-link">LinkedIn</a>
+                        <a href="#" class="social-link">Twitter</a>
                     </div>
                 </div>
-            </section>
-
-            <section id="contact" class="section">
-                <h2 class="section-title">socials & contact</h2>
-                <div class="contact-wrapper">
-                    <div class="glass-card contact-card">
-                        <div class="social-grid">
-                            <a href="https://discord.gg/3svRDWNr" target="_blank" class="social-item">
-                                <img src="assets/icons/Discord.png" alt="Discord" class="social-img">
-                                <div class="social-info">
-                                    <div class="social-platform">Discord</div>
-                                    <div class="social-username">@joshatticus</div>
-                                </div>
-                            </a>
-                            <a href="https://github.com/JoshAtticus" target="_blank" class="social-item">
-                                <img src="assets/icons/GitHub.png" alt="GitHub" class="social-img">
-                                <div class="social-info">
-                                    <div class="social-platform">GitHub</div>
-                                    <div class="social-username">@JoshAtticus</div>
-                                </div>
-                            </a>
-                            <a href="https://www.tiktok.com/@joshatticu" target="_blank" class="social-item">
-                                <img src="assets/icons/TikTok.png" alt="TikTok" class="social-img">
-                                <div class="social-info">
-                                    <div class="social-platform">TikTok</div>
-                                    <div class="social-username">@joshatticu</div>
-                                </div>
-                            </a>
-                            <a href="https://youtube.com/@joshatticus" target="_blank" class="social-item">
-                                <img src="assets/icons/YouTube.png" alt="YouTube" class="social-img">
-                                <div class="social-info">
-                                    <div class="social-platform">YouTube</div>
-                                    <div class="social-username">@joshatticus</div>
-                                </div>
-                            </a>
-                            <a href="https://wasteof.money/users/joshatticus" target="_blank" class="social-item">
-                                <img src="assets/icons/wasteof.money.png" alt="YouTube" class="social-img">
-                                <div class="social-info">
-                                    <div class="social-platform">wasteof.money</div>
-                                    <div class="social-username">joshatticus</div>
-                                </div>
-                            </a>
-                            <a href="https://t.me/joshatticus" target="_blank" class="social-item">
-                                <img src="assets/icons/Telegram.png" alt="YouTube" class="social-img">
-                                <div class="social-info">
-                                    <div class="social-platform">Telegram</div>
-                                    <div class="social-username">joshatticus</div>
-                                </div>
-                            </a>
+                <div class="contact-form">
+                    <form>
+                        <div class="form-group">
+                            <input type="text" placeholder="Your Name" required>
                         </div>
-                    </div>
-                    <div class="glass-card email-card">
-                        <h3>Send me an email</h3>
-                        <a href="mailto:joshatticus02@gmail.com" class="email-link">
-                            <i class="fas fa-envelope"></i> joshatticus02@gmail.com
-                        </a>
-                    </div>
+                        <div class="form-group">
+                            <input type="email" placeholder="Your Email" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" placeholder="Subject" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea placeholder="Your Message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Send Message</button>
+                    </form>
                 </div>
-            </section>
+            </div>
+        </div>
+    </section>
 
-            <footer class="footer">
-                <p>&copy; 2025 JoshAtticus. All rights reserved.</p>
-            </footer>
-        </main>
-    </div>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2025 Your Name. All rights reserved.</p>
+                <p>Built with passion and modern web technologies</p>
+            </div>
+        </div>
+    </footer>
 
-    <script>
-        document.getElementById('menu-toggle').addEventListener('click', function() {
-            document.querySelector('.sidebar').classList.toggle('active');
-        });
-
-        function updateActiveLink() {
-            const sections = document.querySelectorAll('section');
-            const navLinks = document.querySelectorAll('.sidebar-nav a');
-            const scrollPosition = window.scrollY + window.innerHeight / 3;
-            const isAtBottom = (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100;
-            
-            if (isAtBottom) {
-                navLinks.forEach(link => link.classList.remove('active'));
-                navLinks[navLinks.length - 1].classList.add('active');
-                return;
-            }
-            
-            let foundActive = false;
-            
-            for (let i = sections.length - 1; i >= 0; i--) {
-                const section = sections[i];
-                const sectionTop = section.offsetTop;
-                const sectionBottom = sectionTop + section.offsetHeight;
-                
-                if (scrollPosition >= sectionTop && !foundActive) {
-                    const currentId = '#' + section.getAttribute('id');
-                    
-                    navLinks.forEach(link => link.classList.remove('active'));
-                    
-                    const currentLink = document.querySelector(`.sidebar-nav a[href="${currentId}"]`);
-                    if (currentLink) {
-                        currentLink.classList.add('active');
-                        foundActive = true;
-                    }
-                }
-            }
-        }
-
-        window.addEventListener('scroll', updateActiveLink);
-        window.addEventListener('load', updateActiveLink);
-
-        document.querySelectorAll('.sidebar-nav a').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                const targetId = this.getAttribute('href');
-                const targetElement = document.querySelector(targetId);
-                
-                if (targetElement) {
-                    document.querySelectorAll('.sidebar-nav a').forEach(link => {
-                        link.classList.remove('active');
-                    });
-                    
-                    this.classList.add('active');
-                    
-                    targetElement.scrollIntoView({
-                        behavior: 'smooth'
-                    });
-                    
-                    if (window.innerWidth < 768) {
-                        document.querySelector('.sidebar').classList.remove('active');
-                    }
-                }
-            });
-        });
-    </script>
+    <script src="assets/script.js"></script>
 </body>
-
 </html>
