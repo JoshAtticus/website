@@ -1,0 +1,149 @@
+---
+// component that displays a card with a title and content.
+
+interface Props {
+    title: string;
+    content: string;
+    link?: string;
+    imgSrc?: string;
+    imgAlt?: string;
+    linkTitle?: string;
+    linkTarget?: string;
+}
+
+const { title, content, link, imgSrc, imgAlt = "", linkTitle = "Read more", linkTarget = "_blank" } = Astro.props;
+---
+
+<div class="card">
+    {imgSrc && <img src={imgSrc} alt={imgAlt} class="card-image" />}
+    <div class="card-content">
+        <h2 class="card-title">{title}</h2>
+        <p class="card-text">{content}</p>
+        {link && (
+            <a href={link} class="card-link" target={linkTarget}>
+                {linkTitle}
+            </a>
+        )}
+    </div>
+</div>
+
+<style>
+    .card {
+        font-family: Inter, Roboto, 'Helvetica Neue', 'Arial Nova', 'Nimbus Sans', Arial, sans-serif;
+        width: 350px;
+        padding: 20px;
+        background: linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.1) 0%,
+            rgba(255, 255, 255, 0.05) 100%
+        );
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        box-shadow: 
+            0 8px 32px rgba(0, 0, 0, 0.37),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        color: #e5e7eb;
+        position: relative;
+    }
+
+    .card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.4),
+            transparent
+        );
+    }
+
+    .card:hover {
+        transform: translateY(-8px) scale(1.02);
+        background: linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.15) 0%,
+            rgba(255, 255, 255, 0.08) 100%
+        );
+        border-color: rgba(255, 255, 255, 0.25);
+        box-shadow: 
+            0 20px 40px rgba(0, 0, 0, 0.4),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+
+    .card-image {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+        border-radius: 12px;
+        margin-bottom: 16px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-content {
+        padding: 0;
+        position: relative;
+        z-index: 2;
+    }
+
+    .card-title {
+        margin: 0 0 1em;
+        font-weight: 600;
+        color: #f9fafb;
+        font-size: 20px;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .card-text {
+        color: #d1d5db;
+        font-size: 16px;
+        line-height: 24px;
+        letter-spacing: -0.006em;
+        margin: 0;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-link {
+        display: inline-flex;
+        align-items: center;
+        margin-top: 1rem;
+        padding: 12px 16px;
+        color: white;
+        background: linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.2) 0%,
+            rgba(255, 255, 255, 0.1) 100%
+        );
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 500;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        box-shadow: 
+            0 4px 16px rgba(0, 0, 0, 0.2),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    .card-link:hover {
+        background: linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.3) 0%,
+            rgba(255, 255, 255, 0.15) 100%
+        );
+        border-color: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 
+            0 6px 20px rgba(0, 0, 0, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+</style>

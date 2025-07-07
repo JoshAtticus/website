@@ -1,0 +1,158 @@
+---
+// Glassmorphic button component
+
+interface Props {
+    href?: string;
+    target?: string;
+    variant?: 'primary' | 'secondary';
+    size?: 'small' | 'medium' | 'large';
+    class?: string;
+}
+
+const { 
+    href, 
+    target, 
+    variant = 'primary', 
+    size = 'medium',
+    class: className = ''
+} = Astro.props;
+
+const Element = href ? 'a' : 'button';
+---
+
+<Element 
+    class={`glass-button glass-button--${variant} glass-button--${size} ${className}`}
+    href={href}
+    target={target}
+>
+    <slot />
+</Element>
+
+<style>
+    .glass-button {
+        font-family: Inter, Roboto, 'Helvetica Neue', 'Arial Nova', 'Nimbus Sans', Arial, sans-serif;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+    }
+
+    .glass-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.4),
+            transparent
+        );
+    }
+
+    /* Primary variant */
+    .glass-button--primary {
+        background: linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.15) 0%,
+            rgba(255, 255, 255, 0.05) 100%
+        );
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        color: white;
+        box-shadow: 
+            0 8px 32px rgba(0, 0, 0, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .glass-button--primary:hover {
+        background: linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.25) 0%,
+            rgba(255, 255, 255, 0.1) 100%
+        );
+        border-color: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 
+            0 12px 40px rgba(0, 0, 0, 0.4),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+
+    .glass-button--primary:active {
+        transform: translateY(0);
+        box-shadow: 
+            0 4px 16px rgba(0, 0, 0, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    /* Secondary variant */
+    .glass-button--secondary {
+        background: linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.08) 0%,
+            rgba(255, 255, 255, 0.03) 100%
+        );
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        color: #d1d5db;
+        box-shadow: 
+            0 4px 16px rgba(0, 0, 0, 0.2),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .glass-button--secondary:hover {
+        background: linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.12) 0%,
+            rgba(255, 255, 255, 0.06) 100%
+        );
+        border-color: rgba(255, 255, 255, 0.15);
+        color: #f3f4f6;
+        transform: translateY(-1px);
+    }
+
+    /* Size variants */
+    .glass-button--small {
+        padding: 8px 16px;
+        font-size: 14px;
+        border-radius: 8px;
+    }
+
+    .glass-button--medium {
+        padding: 12px 24px;
+        font-size: 16px;
+    }
+
+    .glass-button--large {
+        padding: 16px 32px;
+        font-size: 18px;
+        border-radius: 16px;
+    }
+
+    /* Focus styles */
+    .glass-button:focus {
+        outline: none;
+        box-shadow: 
+            0 0 0 2px rgba(255, 255, 255, 0.3),
+            0 8px 32px rgba(0, 0, 0, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    /* Disabled state */
+    .glass-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none !important;
+    }
+</style>

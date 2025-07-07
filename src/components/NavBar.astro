@@ -1,0 +1,154 @@
+---
+// the navbar of all navbars
+import cube from '../assets/cube.svg';
+---
+
+<nav class="navbar">
+    <div class="navbar-container">
+        <img src={cube.src} width="16" height="16" alt="JoshAtticus Logo" />
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="#home" class="nav-link">Home</a>
+            </li>
+            <li class="nav-item">
+                <a href="#about" class="nav-link">About</a>
+            </li>
+            <li class="nav-item">
+                <a href="#projects" class="nav-link">Projects</a>
+            </li>
+            <li class="nav-item">
+                <a href="#contact" class="nav-link">Contact</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<style>
+    .navbar {
+        position: fixed;
+        top: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+        width: auto;
+        min-width: 400px;
+        max-width: 600px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        padding: 8px 16px;
+        box-shadow: 
+            0 8px 32px rgba(0, 0, 0, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+    
+    .navbar-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .logo {
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        color: rgba(255, 255, 255, 0.9);
+        letter-spacing: -0.02em;
+        padding: 6px 12px;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+    }
+    
+    .logo:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+    }
+    
+    .nav-menu {
+        display: flex;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        gap: 4px;
+    }
+    
+    .nav-item {
+        margin: 0;
+    }
+    
+    .nav-link {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 500;
+        padding: 6px 12px;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+        display: block;
+        letter-spacing: -0.01em;
+    }
+    
+    .nav-link:hover {
+        color: white;
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-1px);
+    }
+    
+    .nav-link:active {
+        transform: translateY(0);
+        background: rgba(255, 255, 255, 0.1);
+    }
+    
+    @media (max-width: 768px) {
+        .navbar {
+            position: fixed;
+            top: 8px;
+            left: 8px;
+            right: 8px;
+            transform: none;
+            min-width: auto;
+            max-width: none;
+            width: auto;
+            padding: 6px 12px;
+        }
+        
+        .navbar-container {
+            flex-direction: row;
+            align-items: center;
+        }
+        
+        .nav-menu {
+            gap: 2px;
+        }
+        
+        .logo {
+            font-size: 13px;
+            padding: 4px 8px;
+        }
+        
+        .nav-link {
+            font-size: 12px;
+            padding: 4px 8px;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .navbar-container {
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .logo {
+            display: none;
+        }
+        
+        .nav-menu {
+            justify-content: center;
+            width: 100%;
+        }
+    }
+</style>

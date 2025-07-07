@@ -1,0 +1,17 @@
+---
+// component that displays a grid of cards.
+--- 
+
+<div class="card-grid">
+    <slot />
+</div>
+
+<style>
+    .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 2rem;
+        padding: 2rem 0;
+        width: 100%;
+    }
+</style>

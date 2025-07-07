@@ -1,0 +1,15 @@
+---
+// Font Awesome Icons Component
+interface Props {
+    name: string;
+    size?: string;
+    class?: string;
+}
+
+const { name, size = "1em", class: className = "" } = Astro.props;
+---
+
+<!-- Font Awesome CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<i class={`fas fa-${name} ${className}`} style={`font-size: ${size};`}></i>
