@@ -3,24 +3,30 @@
 
 interface Props {
     title: string;
-    content: string;
+    content?: string;
     link?: string;
     imgSrc?: string;
     imgAlt?: string;
     linkTitle?: string;
     linkTarget?: string;
+    shape?: 'rectangle' | 'square';
+    buttonStyle?: 'inline' | 'full';
+    icon?: string;
+    avatarSrc?: string;
 }
 
-const { title, content, link, imgSrc, imgAlt = "", linkTitle = "Read more", linkTarget = "_blank" } = Astro.props;
+const { title, content, link, imgSrc, imgAlt = "", linkTitle = "Read more", linkTarget = "_blank", shape = "rectangle", buttonStyle = "inline", icon, avatarSrc } = Astro.props;
 ---
 
-<div class="card">
-    {imgSrc && <img src={imgSrc} alt={imgAlt} class="card-image" />}
+<div class={`card card-${shape}`}>
+    {imgSrc && !avatarSrc && <img src={imgSrc} alt={imgAlt} class="card-image" />}
     <div class="card-content">
+        {avatarSrc && shape === 'square' && <img src={avatarSrc} alt={imgAlt || title} class="card-avatar" />}
+        {!avatarSrc && icon && shape === 'square' && <div class="card-icon">{icon}</div>}
         <h2 class="card-title">{title}</h2>
-        <p class="card-text">{content}</p>
+        {content && <p class="card-text">{content}</p>}
         {link && (
-            <a href={link} class="card-link" target={linkTarget}>
+            <a href={link} class={`card-link card-link-${buttonStyle}`} target={linkTarget}>
                 {linkTitle}
             </a>
         )}
@@ -30,27 +36,101 @@ const { title, content, link, imgSrc, imgAlt = "", linkTitle = "Read more", link
 <style>
     .card {
         font-family: Inter, Roboto, 'Helvetica Neue', 'Arial Nova', 'Nimbus Sans', Arial, sans-serif;
-        width: 350px;
-        padding: 20px;
+        width: 100%;
+        max-width: 350px;
+        padding: 24px;
         background: linear-gradient(
             135deg,
-            rgba(255, 255, 255, 0.1) 0%,
-            rgba(255, 255, 255, 0.05) 100%
+            rgba(255, 255, 255, 0.11) 0%,
+            rgba(255, 255, 255, 0.05) 50%,
+            rgba(255, 255, 255, 0.08) 100%
         );
-        border-radius: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
+        border-radius: 24px;
+        border: 0.5px solid rgba(255, 255, 255, 0.22);
+        backdrop-filter: blur(40px) saturate(180%);
+        -webkit-backdrop-filter: blur(40px) saturate(180%);
         box-shadow: 
-            0 8px 32px rgba(0, 0, 0, 0.37),
-            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            0 8px 32px rgba(0, 0, 0, 0.4),
+            0 2px 8px rgba(0, 0, 0, 0.2),
+            inset 0 0 0 0.5px rgba(255, 255, 255, 0.12),
+            inset 0 1px 0 0 rgba(255, 255, 255, 0.25);
         overflow: hidden;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         color: #e5e7eb;
         position: relative;
     }
 
+    .card-square {
+        aspect-ratio: unset;
+        display: flex;
+        flex-direction: column;
+        max-width: 160px;
+        padding: 20px 30px 14px 30px;
+    }
+    
+    .card-square .card-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .card-square .card-title {
+        font-size: 16px;
+        margin: 0;
+        text-align: center;
+    }
+    
+    .card-square .card-link {
+        margin-top: 0;
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+    
+    .card-icon {
+        font-size: 48px;
+        line-height: 1;
+        margin-bottom: 4px;
+    }
+    
+    .card-avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 4px;
+        box-shadow: 
+            0 4px 16px rgba(0, 0, 0, 0.3),
+            0 0 0 2px rgba(255, 255, 255, 0.1);
+        border: 2px solid rgba(255, 255, 255, 0.15);
+    }
+
     .card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 24px;
+        padding: 0.5px;
+        background: linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.35) 0%,
+            rgba(255, 255, 255, 0.08) 50%,
+            rgba(255, 255, 255, 0.2) 100%
+        );
+        -webkit-mask: 
+            linear-gradient(#fff 0 0) content-box, 
+            linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+        opacity: 0.5;
+        transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .card::after {
         content: '';
         position: absolute;
         top: 0;
@@ -60,22 +140,30 @@ const { title, content, link, imgSrc, imgAlt = "", linkTitle = "Read more", link
         background: linear-gradient(
             90deg,
             transparent,
-            rgba(255, 255, 255, 0.4),
+            rgba(255, 255, 255, 0.5),
             transparent
         );
+        opacity: 0.6;
     }
 
     .card:hover {
-        transform: translateY(-8px) scale(1.02);
+        transform: translateY(-8px);
         background: linear-gradient(
             135deg,
-            rgba(255, 255, 255, 0.15) 0%,
-            rgba(255, 255, 255, 0.08) 100%
+            rgba(255, 255, 255, 0.14) 0%,
+            rgba(255, 255, 255, 0.07) 50%,
+            rgba(255, 255, 255, 0.1) 100%
         );
-        border-color: rgba(255, 255, 255, 0.25);
+        border-color: rgba(255, 255, 255, 0.28);
         box-shadow: 
-            0 20px 40px rgba(0, 0, 0, 0.4),
-            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            0 20px 60px rgba(0, 0, 0, 0.5),
+            0 4px 16px rgba(0, 0, 0, 0.3),
+            inset 0 0 0 0.5px rgba(255, 255, 255, 0.18),
+            inset 0 1px 0 0 rgba(255, 255, 255, 0.35);
+    }
+    
+    .card:hover::before {
+        opacity: 0.7;
     }
 
     .card-image {
@@ -113,37 +201,68 @@ const { title, content, link, imgSrc, imgAlt = "", linkTitle = "Read more", link
     .card-link {
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         margin-top: 1rem;
-        padding: 12px 16px;
+        padding: 10px 18px;
         color: white;
         background: linear-gradient(
             135deg,
-            rgba(255, 255, 255, 0.2) 0%,
-            rgba(255, 255, 255, 0.1) 100%
+            rgba(255, 255, 255, 0.18) 0%,
+            rgba(255, 255, 255, 0.08) 50%,
+            rgba(255, 255, 255, 0.12) 100%
         );
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        border: 0.5px solid rgba(255, 255, 255, 0.25);
         border-radius: 12px;
         text-decoration: none;
         font-weight: 500;
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
+        font-size: 14px;
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
         box-shadow: 
-            0 4px 16px rgba(0, 0, 0, 0.2),
-            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            0 4px 16px rgba(0, 0, 0, 0.25),
+            0 1px 4px rgba(0, 0, 0, 0.15),
+            inset 0 0 0 0.5px rgba(255, 255, 255, 0.15),
+            inset 0 1px 0 0 rgba(255, 255, 255, 0.25);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .card-link-full {
+        display: flex;
+        width: 100%;
+    }
+    
+    .card-link::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 12px;
+        background: linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.25) 0%,
+            rgba(255, 255, 255, 0.1) 100%
+        );
+        opacity: 0;
+        transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .card-link:hover {
-        background: linear-gradient(
-            135deg,
-            rgba(255, 255, 255, 0.3) 0%,
-            rgba(255, 255, 255, 0.15) 100%
-        );
-        border-color: rgba(255, 255, 255, 0.3);
+        border-color: rgba(255, 255, 255, 0.35);
         transform: translateY(-2px);
         box-shadow: 
-            0 6px 20px rgba(0, 0, 0, 0.3),
-            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            0 8px 24px rgba(0, 0, 0, 0.3),
+            0 2px 8px rgba(0, 0, 0, 0.2),
+            inset 0 0 0 0.5px rgba(255, 255, 255, 0.2),
+            inset 0 1px 0 0 rgba(255, 255, 255, 0.35);
+    }
+    
+    .card-link:hover::before {
+        opacity: 1;
+    }
+    
+    .card-link:active {
+        transform: translateY(0);
     }
 </style>

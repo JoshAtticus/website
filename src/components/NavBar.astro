@@ -10,6 +10,15 @@ import cube from '../assets/cube.svg';
             <li class="nav-item">
                 <a href="/" class="nav-link">Home</a>
             </li>
+            <li class="nav-item">
+                <a href="/about" class="nav-link">About</a>
+            </li>
+            <li class="nav-item">
+                <a href="/projects" class="nav-link">Projects</a>
+            </li>
+            <li class="nav-item">
+                <a href="/contact" class="nav-link">Contact</a>
+            </li>
         </ul>
     </div>
 </nav>
@@ -24,15 +33,61 @@ import cube from '../assets/cube.svg';
         width: auto;
         min-width: 400px;
         max-width: 600px;
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 12px;
+        background: linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.12) 0%,
+            rgba(255, 255, 255, 0.06) 50%,
+            rgba(255, 255, 255, 0.08) 100%
+        );
+        backdrop-filter: blur(40px) saturate(180%);
+        -webkit-backdrop-filter: blur(40px) saturate(180%);
+        border: 0.5px solid rgba(255, 255, 255, 0.25);
+        border-radius: 16px;
         padding: 8px 16px;
         box-shadow: 
-            0 8px 32px rgba(0, 0, 0, 0.3),
-            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            0 8px 32px rgba(0, 0, 0, 0.4),
+            0 2px 8px rgba(0, 0, 0, 0.2),
+            inset 0 0 0 0.5px rgba(255, 255, 255, 0.15),
+            inset 0 1px 0 0 rgba(255, 255, 255, 0.3);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .navbar::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 16px;
+        padding: 0.5px;
+        background: linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.4) 0%,
+            rgba(255, 255, 255, 0.1) 50%,
+            rgba(255, 255, 255, 0.2) 100%
+        );
+        -webkit-mask: 
+            linear-gradient(#fff 0 0) content-box, 
+            linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+        opacity: 0.6;
+    }
+    
+    .navbar:hover {
+        background: linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.15) 0%,
+            rgba(255, 255, 255, 0.08) 50%,
+            rgba(255, 255, 255, 0.1) 100%
+        );
+        box-shadow: 
+            0 12px 48px rgba(0, 0, 0, 0.5),
+            0 4px 12px rgba(0, 0, 0, 0.3),
+            inset 0 0 0 0.5px rgba(255, 255, 255, 0.2),
+            inset 0 1px 0 0 rgba(255, 255, 255, 0.4);
     }
     
     .navbar-container {
@@ -72,26 +127,52 @@ import cube from '../assets/cube.svg';
     }
     
     .nav-link {
-        color: rgba(255, 255, 255, 0.8);
+        color: rgba(255, 255, 255, 0.85);
         text-decoration: none;
         font-size: 13px;
         font-weight: 500;
         padding: 6px 12px;
-        border-radius: 6px;
-        transition: all 0.2s ease;
+        border-radius: 8px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         display: block;
         letter-spacing: -0.01em;
+        position: relative;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+    
+    .nav-link::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 8px;
+        background: linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.2) 0%,
+            rgba(255, 255, 255, 0.05) 100%
+        );
+        opacity: 0;
+        transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
     .nav-link:hover {
         color: white;
-        background: rgba(255, 255, 255, 0.15);
         transform: translateY(-1px);
+    }
+    
+    .nav-link:hover::before {
+        opacity: 1;
     }
     
     .nav-link:active {
         transform: translateY(0);
-        background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .nav-link:active::before {
+        background: linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.15) 0%,
+            rgba(255, 255, 255, 0.03) 100%
+        );
     }
     
     @media (max-width: 768px) {

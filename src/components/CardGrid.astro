@@ -8,10 +8,28 @@
 
 <style>
     .card-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-        gap: 2rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.25rem;
         padding: 2rem 0;
         width: 100%;
+        max-width: 1200px;
+        justify-content: center;
+    }
+    
+    /* Limit square cards to 3 per row */
+    .card-grid:has(.card-square) {
+        max-width: 800px;
+    }
+    
+    @media (max-width: 768px) {
+        .card-grid {
+            gap: 1rem;
+            padding: 1.5rem 0;
+        }
+        
+        .card-grid:has(.card-square) {
+            max-width: 100%;
+        }
     }
 </style>

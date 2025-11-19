@@ -15,9 +15,21 @@ import CardGrid from './CardGrid.astro';
             </h1>
 			<p>Feel free to reach out to me!</p>
             <CardGrid>
-                <Card title="Email" content="No Spam Email Please" link="mailto:hey@joshattic.us" linkTitle="Send Email" />
-                <Card title="Telegram" content="" link="https://id.joshattic.us" linkTitle="Visit" />
+                <Card title="Email" content="No Spam Email Please" link="mailto:contact@joshattic.us" linkTitle="Send Email" />
+                <Card title="Discord" content="Discord Server" link="https://discord.gg/havaGJytvH" linkTitle="Join" />
                 <Card title="Blog" content="My awesome little technology blog" link="https://blog.joshattic.us" linkTitle="Visit" />
+            </CardGrid>
+
+            <h1>
+                Socials
+            </h1>
+            <p>Find me on social media</p>
+            <CardGrid>
+                <Card title="TikTok" link="https://www.tiktok.com/@joshatticus" linkTitle="Visit" shape="square" buttonStyle="full" avatarSrc="/avatars/tiktok.png"/>
+                <Card title="GitHub" link="https://github.com/JoshAtticus" linkTitle="Visit" shape="square" buttonStyle="full" avatarSrc="/avatars/github.png"/>
+                <Card title="YouTube" link="https://youtube.com/@joshatticus" linkTitle="Visit" shape="square" buttonStyle="full" avatarSrc="/avatars/youtube.png"/>
+                <Card title="Twitter" link="https://twitter.com/joshatticus" linkTitle="Visit" shape="square" buttonStyle="full" avatarSrc="/avatars/twitter.jpg"/>
+                <Card title="wasteof.money" link="https://wasteof.money/users/joshatticus" linkTitle="Visit" shape="square" buttonStyle="full" avatarSrc="/avatars/wasteof.png"/>
             </CardGrid>
         </section>
     </main>
@@ -37,25 +49,30 @@ import CardGrid from './CardGrid.astro';
 
     #container {
         font-family: Inter, Roboto, 'Helvetica Neue', 'Arial Nova', 'Nimbus Sans', Arial, sans-serif;
-        height: 100%;
+        min-height: 100vh;
         background-color: #0f0f0f;
         color: #e5e7eb;
+        overflow-y: auto;
     }
 
     main {
-        height: 100%;
+        min-height: 100vh;
         display: flex;
         justify-content: center;
+        align-items: flex-start;
         z-index: 1;
+        padding-top: 100px;
+        padding-bottom: 60px;
     }
 
     #hero {
         display: flex;
         align-items: center;
         flex-direction: column;
-        justify-content: center;
         padding: 16px;
         z-index: 1;
+        width: 100%;
+        max-width: 1200px;
     }
 
     h1 {
