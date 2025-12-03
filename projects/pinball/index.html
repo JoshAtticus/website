@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dystopian Pinball</title>
+    <style>
+        body {
+            background-color: #111;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Courier New', Courier, monospace;
+            color: #0f0;
+        }
+
+        #game-container {
+            position: relative;
+            box-shadow: 0 0 50px rgba(0, 255, 0, 0.2);
+        }
+
+        canvas {
+            background-color: #000;
+            display: block;
+            max-height: 95vh;
+            max-width: 100vw;
+            border: 2px solid #333;
+        }
+
+        #overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 10;
+            cursor: pointer;
+            transition: opacity 0.5s;
+        }
+
+        h1 {
+            color: #ff0055;
+            text-shadow: 0 0 10px #ff0055;
+            font-size: 40px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        p {
+            color: #0ff;
+            text-align: center;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        .blink {
+            animation: blinker 1s linear infinite;
+            color: #0f0;
+            margin-top: 30px;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        @keyframes blinker {
+            50% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <canvas id="pinballCanvas" width="600" height="1000"></canvas>
+    <div id="overlay">
+        <h1>DYSTOPIAN PINBALL</h1>
+        <p>Left/Right Arrow or A/D: Flippers</p>
+        <p>Space/Down Arrow: Launch Ball</p>
+        <p>I: Infinite Balls | F1: Demo Mode</p>
+        <div class="blink">CLICK TO INITIALIZE SYSTEM</div>
+    </div>
+</div>
+
+<script>
+/**
+ * Dystopian Pinball - JS Port
+ * Uses Canvas API for rendering and Web Audio API for sound
+ */
+
+// --- Constants ---
+const SCREEN_WIDTH = 600;
+const SCREEN_HEIGHT = 1000;
+const FPS = 60;
+
+// Colors
+const COLORS = {
+    BLACK: '#000000',
+    GREEN: '#00FF00',
+    RED: '#FF0000',
+    CYAN: '#00FFFF',
+    MAGENTA: '#FF00FF',
+    DARK_GREEN: '#0a2d0a',
+    DARK_GRAY: '#2a2a2a',
+    LIGHT_GRAY: '#222222',
+    YELLOW: '#FFFF00'
+};
+
+// --- Audio System (Web Audio API) ---
+class AudioController {
+    constructor() {
+        this.ctx = null;
+        this.initialized = false;
+    }
+
+    init() {
+        if (!this.initialized) {
+            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+            this.initialized = true;
+        }
+        if (this.ctx.state === 'suspended') {
+            this.ctx.resume();
+        }
+    }
+
+    generateTone(freq, duration, type = 'sine', volume = 0.3) {
+        if (!this.initialized) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+        
+        gain.gain.setValueAtTime(volume, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+        
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        
+        osc.start();
+        osc.stop(this.ctx.currentTime + duration);
+    }
+
+    generateSweep(startFreq, endFreq, duration, volume = 0.3) {
+        if (!this.initialized) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        
+        osc.frequency.setValueAtTime(startFreq, this.ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(endFreq, this.ctx.currentTime + duration);
+        
+        gain.gain.setValueAtTime(volume, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+        
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        
+        osc.start();
+        osc.stop(this.ctx.currentTime + duration);
+    }
+
+    playFlipper() { this.generateTone(200, 0.1, 'triangle', 0.2); }
+    playBumper() { this.generateTone(400, 0.15, 'square', 0.15); }
+    playTarget() { this.generateTone(600, 0.1, 'sine', 0.15); }
+    playWormhole() { this.generateSweep(200, 800, 0.3, 0.2); }
+    playLaunch() { this.generateSweep(100, 400, 0.5, 0.2); }
+    playCombo() { this.generateTone(1000, 0.2, 'sine', 0.1); }
+}
+
+const audio = new AudioController();
+
+// --- Helper Classes ---
+
+class Ball {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.vx = 0;
+        this.vy = 0;
+        this.r = 8;
+    }
+}
+
+class Flipper {
+    constructor(angle, targetAngle) {
+        this.angle = angle;
+        this.targetAngle = targetAngle;
+    }
+}
+
+class Obstacle {
+    constructor(x, y, r, type) {
+        this.x = x;
+        this.y = y;
+        this.r = r;
+        this.type = type;
+        this.hits = 0;
+        this.vx = 0;
+        this.vy = 0;
+        this.originX = x;
+        this.originY = y;
+        this.knockedDown = false;
+        this.id = Math.random();
+    }
+}
+
+class Particle {
+    constructor(x, y, vx, vy, life, color, size) {
+        this.x = x;
+        this.y = y;
+        this.vx = vx;
+        this.vy = vy;
+        this.life = life;
+        this.maxLife = life;
+        this.color = color; // Expects hex string
+        this.size = size;
+    }
+}
+
+// --- Game Logic ---
+
+class PinballGame {
+    constructor(canvas) {
+        this.canvas = canvas;
+        this.ctx = canvas.getContext('2d');
+        
+        this.score = 0;
+        this.ballsLeft = 3;
+        this.infiniteBalls = false;
+        this.demoMode = false;
+        this.gameActive = false;
+        this.gameOver = false;
+        
+        this.combo = 0;
+        this.dropTargetsDown = 0;
+        
+        this.particles = [];
+        this.screenShake = 0;
+        this.screenShakeBuildup = 0;
+        this.flashAlpha = 0;
+        
+        this.ball = new Ball(585, 900);
+        this.leftFlipper = new Flipper(0.4, 0.4);
+        this.rightFlipper = new Flipper(-0.4, -0.4);
+        
+        this.launchPower = 0;
+        this.launching = false;
+        this.inShooter = true;
+        this.firstLaunch = true;
+        
+        this.cameraBlinkTime = 0;
+        this.lastHitObs = null;
+        this.continuousHits = 0;
+        
+        // Input State
+        this.keys = {};
+
+        this.initObjects();
+        this.preRenderBackground();
+        
+        // Start loop
+        this.lastTime = 0;
+        requestAnimationFrame(this.gameLoop.bind(this));
+    }
+
+    initObjects() {
+        // Obstacles
+        this.obstacles = [
+            // Top bumpers
+            new Obstacle(200, 180, 28, 'bumper'),
+            new Obstacle(300, 150, 28, 'bumper'),
+            new Obstacle(400, 180, 28, 'bumper'),
+            new Obstacle(250, 220, 26, 'bumper'),
+            new Obstacle(350, 220, 26, 'bumper'),
+            
+            // Upper Drop targets
+            ...[120, 170, 220, 270, 320, 370, 420, 470].map(x => new Obstacle(x, 320, 18, 'drop_target')),
+            
+            // Robots
+            new Obstacle(100, 420, 25, 'robot'),
+            new Obstacle(500, 420, 25, 'robot'),
+            new Obstacle(180, 500, 25, 'robot'),
+            new Obstacle(420, 500, 25, 'robot'),
+            
+            // Middle bumpers
+            new Obstacle(150, 520, 26, 'bumper'),
+            new Obstacle(300, 550, 28, 'bumper'),
+            new Obstacle(450, 520, 26, 'bumper'),
+            
+            // Circuits
+            new Obstacle(100, 600, 20, 'circuit'),
+            new Obstacle(200, 580, 20, 'circuit'),
+            new Obstacle(400, 580, 20, 'circuit'),
+            new Obstacle(500, 600, 20, 'circuit'),
+            
+            // Lower Drop targets
+            ...[180, 230, 280, 330, 380].map(x => new Obstacle(x, 700, 16, 'drop_target')),
+            
+            // Lower Circuits
+            new Obstacle(150, 760, 18, 'circuit'),
+            new Obstacle(300, 740, 18, 'circuit'),
+            new Obstacle(450, 760, 18, 'circuit'),
+            
+            // Slingshots
+            new Obstacle(100, 840, 25, 'slingshot'),
+            new Obstacle(500, 840, 25, 'slingshot'),
+            
+            // Near Slingshot bumpers
+            new Obstacle(160, 800, 22, 'bumper'),
+            new Obstacle(440, 800, 22, 'bumper')
+        ];
+
+        // Init robot velocities
+        this.obstacles.forEach(obs => {
+            if (obs.type === 'robot') {
+                obs.vx = (Math.random() * 2) - 1;
+                obs.vy = (Math.random() * 2) - 1;
+            }
+        });
+
+        this.dropTargetsTotal = this.obstacles.filter(o => o.type === 'drop_target').length;
+
+        // Wormholes
+        this.wormholes = [
+            {x: 80, y: 400, r: 30, exitX: 520, exitY: 400, color: COLORS.MAGENTA, active: false, originX: 80, originY: 400, exitOriginX: 520, exitOriginY: 400}
+        ];
+
+        // Cameras
+        this.cameras = [
+            {x: 60, y: 60, blink: false, angle: 0},
+            {x: 300, y: 40, blink: false, angle: 0},
+            {x: 540, y: 60, blink: false, angle: 0},
+            {x: 100, y: 550, blink: false, angle: 0.5},
+            {x: 500, y: 550, blink: false, angle: -0.5}
+        ];
+
+        // Ramps
+        this.ramps = [
+            {
+                points: [[70, 600], [50, 500], [60, 400], [100, 300], [150, 250], [200, 240]],
+                color: COLORS.CYAN, entryX: 70, entryY: 600, exitX: 200, exitY: 240, exitVx: 8, exitVy: -5, active: false
+            },
+            {
+                points: [[530, 600], [550, 500], [540, 400], [500, 300], [450, 250], [400, 240]],
+                color: COLORS.MAGENTA, entryX: 530, entryY: 600, exitX: 400, exitY: 240, exitVx: -8, exitVy: -5, active: false
+            }
+        ];
+
+        // Lanes
+        this.lanes = [
+            {x1: 40, y1: 850, x2: 70, y2: 920, width: 25, lit: false, color: COLORS.RED},
+            {x1: 100, y1: 850, x2: 130, y2: 920, width: 25, lit: false, color: COLORS.GREEN},
+            {x1: 470, y1: 850, x2: 500, y2: 920, width: 25, lit: false, color: COLORS.GREEN},
+            {x1: 530, y1: 850, x2: 560, y2: 920, width: 25, lit: false, color: COLORS.RED}
+        ];
+
+        // Lights
+        this.lights = [];
+        const topCols = [COLORS.RED, COLORS.GREEN, COLORS.CYAN, COLORS.MAGENTA, COLORS.YELLOW];
+        for(let i=0; i<5; i++) this.lights.push({x: 100 + i*100, y: 100, active: false, color: topCols[i]});
+        for(let i=0; i<5; i++) this.lights.push({x: 50, y: 700 + i*30, active: false, color: COLORS.YELLOW});
+        this.lights.push({x: 550, y: 750, active: false, color: COLORS.RED});
+    }
+
+    preRenderBackground() {
+        this.bgCanvas = document.createElement('canvas');
+        this.bgCanvas.width = SCREEN_WIDTH;
+        this.bgCanvas.height = SCREEN_HEIGHT;
+        const ctx = this.bgCanvas.getContext('2d');
+        
+        ctx.fillStyle = COLORS.BLACK;
+        ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        
+        // Matrix rain
+        const chars = '10ΣΩ∞§¶※◢◤';
+        ctx.font = '16px monospace';
+        for(let i=0; i<200; i++) {
+            ctx.fillStyle = `rgba(0, 255, 0, ${Math.random() * 0.2})`;
+            ctx.fillText(
+                chars.charAt(Math.floor(Math.random() * chars.length)),
+                Math.random() * SCREEN_WIDTH,
+                Math.random() * SCREEN_HEIGHT
+            );
+        }
+    }
+
+    // --- Physics Utilities ---
+
+    pointToLineDistance(px, py, x1, y1, x2, y2) {
+        const A = px - x1;
+        const B = py - y1;
+        const C = x2 - x1;
+        const D = y2 - y1;
+        
+        const dot = A * C + B * D;
+        const lenSq = C * C + D * D;
+        let param = -1;
+        
+        if (lenSq !== 0) param = dot / lenSq;
+        
+        let xx, yy;
+        if (param < 0) { xx = x1; yy = y1; }
+        else if (param > 1) { xx = x2; yy = y2; }
+        else { xx = x1 + param * C; yy = y1 + param * D; }
+        
+        const dx = px - xx;
+        const dy = py - yy;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    // --- Core Logic ---
+
+    launchBall() {
+        if (this.inShooter) {
+            if (this.launching) {
+                this.ball.vy = -this.launchPower / 5 - 5;
+                this.ball.vx = -2;
+                this.launching = false;
+                this.launchPower = 0;
+                this.inShooter = false;
+                this.firstLaunch = false;
+                if (!this.gameActive) this.gameActive = true;
+                audio.playLaunch();
+                this.screenShake = 6;
+                this.addParticles(this.ball.x, this.ball.y, COLORS.GREEN, 15);
+            } else {
+                // Instant launch for return key
+                this.ball.vy = -20;
+                this.ball.vx = -2;
+                this.inShooter = false;
+                this.firstLaunch = false;
+                if (!this.gameActive) this.gameActive = true;
+                audio.playLaunch();
+                this.screenShake = 6;
+                this.addParticles(this.ball.x, this.ball.y, COLORS.GREEN, 15);
+            }
+        }
+    }
+
+    loseBall() {
+        if (!this.infiniteBalls) {
+            this.ballsLeft--;
+            if (this.ballsLeft <= 0) {
+                this.gameActive = false;
+                this.gameOver = true;
+            }
+        }
+        this.resetBall();
+    }
+
+    resetBall() {
+        this.ball.x = 585;
+        this.ball.y = 900;
+        this.ball.vx = 0;
+        this.ball.vy = 0;
+        this.inShooter = true;
+        this.firstLaunch = false;
+        this.combo = 0;
+        this.screenShake = 0;
+        this.screenShakeBuildup = 0;
+        
+        this.obstacles.forEach(o => { if(o.type === 'drop_target') o.knockedDown = false; });
+        this.dropTargetsDown = 0;
+        this.lanes.forEach(l => l.lit = false);
+    }
+
+    resetGame() {
+        this.score = 0;
+        this.ballsLeft = 3;
+        this.gameActive = false;
+        this.gameOver = false;
+        this.resetBall();
+        this.firstLaunch = true;
+        this.launchPower = 0;
+        this.launching = false;
+        this.particles = [];
+        this.lights.forEach(l => l.active = false);
+        this.obstacles.forEach(o => o.hits = 0);
+        this.wormholes.forEach(w => w.active = false);
+    }
+
+    addParticles(x, y, color, count) {
+        for(let i=0; i<count; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const speed = 2 + Math.random() * 6;
+            this.particles.push(new Particle(
+                x, y,
+                Math.cos(angle) * speed,
+                Math.sin(angle) * speed,
+                20 + Math.random() * 20,
+                color,
+                2 + Math.random() * 3
+            ));
+        }
+    }
+
+    // --- Updates ---
+
+    update(dt) {
+        if (this.demoMode) this.updateDemoAI();
+
+        // Music loop logic handled by user interaction generally, 
+        // simple physics step
+        this.updatePhysics();
+        this.updateParticles();
+
+        // Input Handling for flippers (if not demo)
+        if (!this.demoMode) {
+            if (this.keys['ArrowLeft'] || this.keys['a']) this.leftFlipper.targetAngle = -0.4;
+            else this.leftFlipper.targetAngle = 0.4;
+
+            if (this.keys['ArrowRight'] || this.keys['d']) this.rightFlipper.targetAngle = 0.4;
+            else this.rightFlipper.targetAngle = -0.4;
+            
+            // Charging launch
+            if (this.inShooter && (this.keys[' '] || this.keys['ArrowDown'])) {
+                if(!this.launching) this.launching = true;
+            }
+        }
+    }
+
+    updateDemoAI() {
+        if (this.inShooter) {
+            if (!this.launching) this.launching = true;
+            if (this.launchPower > 60 + Math.random() * 40) this.launchBall();
+        }
+
+        const lfX = 220, lfY = 770, rfX = 480, rfY = 770;
+        let approachLeft = false, approachRight = false;
+
+        if (this.ball.y > 650) {
+            const futX = this.ball.x + this.ball.vx * 10;
+            const futY = this.ball.y + this.ball.vy * 10;
+            const dLeft = Math.hypot(futX - lfX, futY - lfY);
+            const dRight = Math.hypot(futX - rfX, futY - rfY);
+
+            if (this.ball.vy > 0) {
+                if (dLeft < 150 && futX < 350) approachLeft = true;
+                if (dRight < 150 && futX > 350) approachRight = true;
+            }
+            if (Math.random() < 0.15) {
+                 if (this.ball.x < 350 && this.ball.y > 700) approachLeft = true;
+                 else if (this.ball.x > 350 && this.ball.y > 700) approachRight = true;
+            }
+        }
+
+        this.leftFlipper.targetAngle = approachLeft ? -0.4 : 0.4;
+        this.rightFlipper.targetAngle = approachRight ? 0.4 : -0.4;
+    }
+
+    updatePhysics() {
+        if (!this.gameActive && !this.demoMode && !this.inShooter) return;
+
+        // Animate entities
+        const time = Date.now() / 1000;
+        this.obstacles.forEach(o => {
+            if (o.type === 'robot') {
+                const speed = 0.3 + (o.originX % 100) / 500;
+                const radius = 30 + (o.originY % 50) / 5;
+                o.x = o.originX + Math.cos(time * speed) * radius;
+                o.y = o.originY + Math.sin(time * speed) * radius;
+            }
+        });
+
+        this.wormholes.forEach((wh, i) => {
+            wh.x = wh.originX + Math.sin(time * 0.5 + i) * 10;
+            wh.y = wh.originY + Math.cos(time * 0.3 + i) * 8;
+            wh.exitX = wh.exitOriginX + Math.sin(time * 0.5 + i + 1) * 10;
+            wh.exitY = wh.exitOriginY + Math.cos(time * 0.3 + i + 1) * 8;
+        });
+
+        // Substeps for physics stability
+        const substeps = 3;
+        for (let i = 0; i < substeps; i++) {
+            this.updatePhysicsSubstep(1.0/substeps);
+        }
+        
+        // Flipper Physics
+        this.leftFlipper.angle += (this.leftFlipper.targetAngle - this.leftFlipper.angle) * 0.4;
+        this.rightFlipper.angle += (this.rightFlipper.targetAngle - this.rightFlipper.angle) * 0.4;
+
+        // Flipper Collision
+        const lHit = this.checkFlipperCollision(150, 920, 100, this.leftFlipper, false);
+        const rHit = this.checkFlipperCollision(450, 920, 100, this.rightFlipper, true);
+
+        if (lHit || rHit) {
+            audio.playFlipper();
+            this.screenShake = 3;
+            this.screenShakeBuildup = Math.min(15, this.screenShakeBuildup + 0.3);
+        }
+
+        if (this.screenShakeBuildup > 0) this.screenShake = Math.max(this.screenShake, this.screenShakeBuildup);
+
+        // Camera blink
+        this.cameraBlinkTime++;
+        if (this.cameraBlinkTime > 25) {
+            this.cameras.forEach(c => c.blink = Math.random() > 0.6);
+            this.cameraBlinkTime = 0;
+        }
+    }
+
+    updatePhysicsSubstep(scale) {
+        if (this.inShooter && this.launching) {
+            this.launchPower = Math.min(100, this.launchPower + 1);
+        }
+
+        if (!this.inShooter) this.ball.vy += 0.4 * scale;
+
+        this.ball.x += this.ball.vx * scale;
+        this.ball.y += this.ball.vy * scale;
+        this.ball.vx *= 0.999;
+        this.ball.vy *= 0.999;
+
+        // Wormholes
+        this.wormholes.forEach(wh => {
+            const dist = Math.hypot(this.ball.x - wh.x, this.ball.y - wh.y);
+            if (dist < wh.r && !wh.active) {
+                wh.active = true;
+                this.ball.x = wh.exitX;
+                this.ball.y = wh.exitY;
+                this.ball.vx *= 1.2;
+                this.ball.vy *= 1.2;
+                this.score += 1000;
+                this.screenShake = 8;
+                this.flashAlpha = 100;
+                audio.playWormhole();
+                this.addParticles(wh.x, wh.y, wh.color, 30);
+            } else if (dist > wh.r + 50) {
+                wh.active = false;
+            }
+        });
+
+        // Walls
+        if (this.ball.x - this.ball.r < 30) {
+            this.ball.x = 30 + this.ball.r;
+            this.ball.vx = Math.abs(this.ball.vx) * 0.7;
+        }
+        if (this.ball.x + this.ball.r > 570 && this.ball.y < 850) {
+            this.ball.x = 570 - this.ball.r;
+            this.ball.vx = -Math.abs(this.ball.vx) * 0.7;
+        }
+        if (this.ball.y - this.ball.r < 30) {
+            this.ball.y = 30 + this.ball.r;
+            this.ball.vy = Math.abs(this.ball.vy) * 0.7;
+        }
+
+        // Shooter Lane
+        if (this.ball.x > 570 && this.ball.x < 600 && this.ball.y > 30 && this.ball.y < 950) {
+            if (!this.inShooter) {
+                if (this.ball.x > 565 && this.ball.vx > 0) {
+                    this.ball.x = 565;
+                    this.ball.vx = -Math.abs(this.ball.vx) * 0.8;
+                }
+            } else {
+                if (this.ball.x < 570 + this.ball.r) this.ball.x = 570 + this.ball.r;
+                if (this.ball.x > 600 - this.ball.r) this.ball.x = 600 - this.ball.r;
+                if (this.ball.y > 945 - this.ball.r) {
+                    this.ball.y = 945 - this.ball.r;
+                    this.ball.vy = -Math.abs(this.ball.vy) * 0.3;
+                }
+                if (this.ball.vy < -5 && this.ball.vx < 0 && this.ball.y < 880) this.inShooter = false;
+            }
+        }
+
+        // Guide Walls
+        const leftGuideY = 850 + (this.ball.x - 30) * 70 / 120;
+        if (this.ball.x > 30 && this.ball.x < 150 && Math.abs(this.ball.y - leftGuideY) < 15) {
+            this.ball.y = leftGuideY - 15;
+            this.ball.vy = -Math.abs(this.ball.vy) * 0.8;
+            this.ball.vx += 3;
+        }
+        const rightGuideY = 850 + (570 - this.ball.x) * 70 / 120;
+        if (this.ball.x > 450 && this.ball.x < 570 && Math.abs(this.ball.y - rightGuideY) < 15) {
+            this.ball.y = rightGuideY - 15;
+            this.ball.vy = -Math.abs(this.ball.vy) * 0.8;
+            this.ball.vx -= 3;
+        }
+
+        // Safety Posts
+        const checkPost = (px, py) => {
+            const dx = this.ball.x - px;
+            const dy = this.ball.y - py;
+            if (Math.hypot(dx, dy) < 20) {
+                const angle = Math.atan2(dy, dx);
+                this.ball.x = px + 21 * Math.cos(angle);
+                this.ball.y = py + 21 * Math.sin(angle);
+                const speed = Math.max(8, Math.hypot(this.ball.vx, this.ball.vy));
+                this.ball.vx = Math.cos(angle) * speed;
+                this.ball.vy = (Math.sin(angle) - 0.3) * speed;
+            }
+        };
+        if (this.ball.x < 80 && this.ball.y > 820) checkPost(55, 840);
+        if (this.ball.x > 520 && this.ball.y > 820) checkPost(545, 840);
+
+        // Ball Lost
+        if (this.ball.y > 980) this.loseBall();
+        if (this.ball.y > 915 && Math.abs(this.ball.vx) < 0.5 && Math.abs(this.ball.vy) < 0.5) {
+            const onLeft = this.ball.x > 100 && this.ball.x < 250;
+            const onRight = this.ball.x > 350 && this.ball.x < 500;
+            if (!onLeft && !onRight && !this.inShooter) this.loseBall();
+        }
+
+        // Obstacle Collision
+        this.obstacles.forEach(obs => {
+            if (obs.type === 'drop_target' && obs.knockedDown) return;
+
+            const dx = this.ball.x - obs.x;
+            const dy = this.ball.y - obs.y;
+            const dist = Math.hypot(dx, dy);
+
+            if (dist < this.ball.r + obs.r) {
+                // Anti-stuck logic
+                if (obs === this.lastHitObs) this.continuousHits++;
+                else { this.continuousHits = 1; this.lastHitObs = obs; }
+
+                if (this.continuousHits > 20) {
+                    this.resetBall();
+                    this.screenShake = 10;
+                    this.addParticles(585, 900, COLORS.RED, 30);
+                    return; 
+                }
+
+                const angle = Math.atan2(dy, dx);
+                this.ball.x = obs.x + (obs.r + this.ball.r) * Math.cos(angle);
+                this.ball.y = obs.y + (obs.r + this.ball.r) * Math.sin(angle);
+
+                const speed = Math.hypot(this.ball.vx, this.ball.vy);
+                let bounce = 0.9;
+                
+                if (obs.type === 'bumper') { bounce = 1.3; audio.playBumper(); this.addParticles(obs.x, obs.y, COLORS.MAGENTA, 20); }
+                else if (obs.type === 'slingshot') { bounce = 1.5; audio.playBumper(); this.addParticles(obs.x, obs.y, COLORS.MAGENTA, 20); }
+                else if (obs.type === 'drop_target') {
+                    bounce = 0.7; obs.knockedDown = true; this.dropTargetsDown++;
+                    if (this.dropTargetsDown === this.dropTargetsTotal) {
+                        this.score += 5000;
+                        this.flashAlpha = 100;
+                        this.lights.forEach((l, i) => { if (i<5) l.active = true; });
+                    }
+                    audio.playTarget();
+                } else {
+                    audio.playTarget();
+                    this.addParticles(obs.x, obs.y, obs.type === 'robot' ? COLORS.GREEN : '#00ff64', 10);
+                }
+
+                this.ball.vx = Math.cos(angle) * speed * bounce;
+                this.ball.vy = Math.sin(angle) * speed * bounce;
+                obs.hits = 10;
+
+                let pts = 50;
+                if (obs.type === 'robot') pts = 150;
+                else if (obs.type === 'circuit') pts = 75;
+                else if (obs.type === 'bumper') pts = 200;
+                else if (obs.type === 'drop_target') pts = 500;
+                else if (obs.type === 'slingshot') pts = 100;
+
+                this.combo++;
+                this.score += pts * Math.max(1, Math.floor(this.combo/3));
+                if (this.combo > 2 && this.combo % 3 === 0) {
+                    audio.playCombo();
+                    this.flashAlpha = 40;
+                }
+                
+                // Random light
+                this.lights[Math.floor(Math.random()*this.lights.length)].active = true;
+                
+                // Small shake
+                this.screenShake = Math.max(this.screenShake, 2);
+            }
+        });
+
+        // Ramps
+        this.ramps.forEach(r => {
+            if (r.active) {
+                if (Math.hypot(this.ball.x - r.exitX, this.ball.y - r.exitY) > 100) r.active = false;
+                return;
+            }
+            if (Math.hypot(this.ball.x - r.entryX, this.ball.y - r.entryY) < 25) {
+                r.active = true;
+                this.ball.x = r.exitX;
+                this.ball.y = r.exitY;
+                this.ball.vx = r.exitVx;
+                this.ball.vy = r.exitVy;
+                this.score += 2000;
+                this.screenShake = 6;
+                this.flashAlpha = 80;
+                audio.playWormhole();
+                this.addParticles(r.entryX, r.entryY, r.color, 25);
+                this.addParticles(r.exitX, r.exitY, r.color, 25);
+            }
+        });
+
+        // Lanes
+        this.lanes.forEach(l => {
+            const minX = Math.min(l.x1, l.x2) - l.width;
+            const maxX = Math.max(l.x1, l.x2) + l.width;
+            const minY = Math.min(l.y1, l.y2);
+            const maxY = Math.max(l.y1, l.y2);
+            if (this.ball.x > minX && this.ball.x < maxX && this.ball.y > minY && this.ball.y < maxY && !l.lit) {
+                l.lit = true;
+                this.score += (l.color === COLORS.GREEN) ? 300 : 500;
+                audio.playTarget();
+                // Bonus for both inlanes
+                if (this.lanes.filter(ln => ln.lit && ln.color === COLORS.GREEN).length === 2) {
+                    this.score += 1000;
+                    this.flashAlpha = 60;
+                }
+            }
+        });
+    }
+
+    checkFlipperCollision(flipX, flipY, len, flipper, isRight) {
+        const endX = flipX + len * Math.cos((isRight ? Math.PI : 0) + flipper.angle);
+        const endY = flipY + len * Math.sin((isRight ? Math.PI : 0) + flipper.angle);
+        
+        const dist = this.pointToLineDistance(this.ball.x, this.ball.y, flipX, flipY, endX, endY);
+        
+        if (dist < this.ball.r + 10) {
+            const dx = endX - flipX;
+            const dy = endY - flipY;
+            let nx = isRight ? dy : -dy;
+            let ny = isRight ? -dx : dx;
+            
+            const l = Math.hypot(nx, ny);
+            nx /= l; ny /= l;
+            if (ny > 0) ny = -ny;
+
+            this.ball.x += nx * (this.ball.r + 10 - dist);
+            this.ball.y += ny * (this.ball.r + 10 - dist);
+            
+            const flipSpeed = Math.abs(flipper.angle - flipper.targetAngle);
+            const speed = 12 + flipSpeed * 30;
+            this.ball.vx = nx * speed;
+            this.ball.vy = ny * speed - 5;
+            return true;
+        }
+        return false;
+    }
+
+    updateParticles() {
+        for (let i = this.particles.length - 1; i >= 0; i--) {
+            const p = this.particles[i];
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.2;
+            p.life--;
+            if (p.life <= 0) this.particles.splice(i, 1);
+        }
+    }
+
+    // --- Rendering ---
+
+    gameLoop() {
+        const now = Date.now();
+        const dt = (now - this.lastTime) / 1000;
+        this.lastTime = now;
+
+        this.update(dt);
+        this.draw();
+
+        if (this.screenShake > 0) this.screenShake--;
+        if (this.flashAlpha > 0) this.flashAlpha = Math.max(0, this.flashAlpha - 10);
+
+        requestAnimationFrame(this.gameLoop.bind(this));
+    }
+
+    draw() {
+        const ctx = this.ctx;
+        
+        // Shake offset
+        let sx = 0, sy = 0;
+        if (this.screenShake > 0) {
+            sx = (Math.random() - 0.5) * this.screenShake;
+            sy = (Math.random() - 0.5) * this.screenShake;
+        }
+
+        ctx.save();
+        ctx.translate(sx, sy);
+
+        // Background
+        ctx.drawImage(this.bgCanvas, 0, 0);
+
+        // Skyscrapers
+        this.drawSkyscrapers(ctx);
+
+        // Playfield Lines
+        this.drawPlayfield(ctx);
+        this.drawRamps(ctx);
+        this.drawLanes(ctx);
+        this.drawNeon(ctx);
+        this.drawLights(ctx);
+        this.drawCameras(ctx);
+        this.drawWormholes(ctx);
+        this.drawObstacles(ctx);
+        this.drawFlippers(ctx);
+        this.drawParticles(ctx);
+        this.drawBall(ctx);
+        this.drawLaunchMeter(ctx);
+        this.drawUI(ctx);
+
+        // Flash
+        if (this.flashAlpha > 0) {
+            ctx.fillStyle = `rgba(255, 255, 255, ${this.flashAlpha / 255})`;
+            ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        }
+        
+        ctx.restore();
+
+        if (this.gameOver) this.drawGameOver(ctx);
+    }
+
+    drawSkyscrapers(ctx) {
+        const buildings = [
+            [35, 400, 50, 600], [95, 350, 45, 650], [150, 420, 40, 580],
+            [200, 380, 55, 620], [265, 410, 45, 590], [320, 360, 50, 640],
+            [380, 390, 48, 610], [438, 370, 52, 630], [500, 400, 47, 600],
+            [555, 350, 45, 650]
+        ];
+        
+        const time = Date.now() / 1000;
+        buildings.forEach(b => {
+            ctx.fillStyle = '#0a0a0a';
+            ctx.fillRect(b[0], b[1], b[2], b[3]);
+            ctx.strokeStyle = '#1a1a1a';
+            ctx.strokeRect(b[0], b[1], b[2], b[3]);
+            
+            // Windows
+            const rows = Math.floor(b[3] / 12);
+            const cols = Math.floor(b[2] / 10);
+            for(let r=0; r<rows; r++) {
+                for(let c=0; c<cols; c++) {
+                    const seed = (b[0]+c) * (b[1]+r);
+                    const flicker = Math.sin(time * 3 + seed) > -0.3;
+                    if (flicker && seed % 5 > 0) {
+                        const br = 0.2 + ((seed % 100) / 300);
+                        ctx.fillStyle = `rgba(0, ${Math.floor(br*255)}, ${Math.floor(br*100)}, 1)`;
+                        ctx.fillRect(b[0] + c*10 + 2, b[1] + r*12 + 2, 6, 7);
+                    }
+                }
+            }
+        });
+    }
+
+    drawPlayfield(ctx) {
+        // Grid
+        ctx.strokeStyle = 'rgba(0, 255, 0, 0.08)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        for(let x=50; x<550; x+=30) { ctx.moveTo(x, 50); ctx.lineTo(x, 830); }
+        for(let y=50; y<830; y+=30) { ctx.moveTo(50, y); ctx.lineTo(550, y); }
+        ctx.stroke();
+
+        // Neon Borders
+        const drawNeonLine = (x1, y1, x2, y2) => {
+            for(let i=0; i<3; i++) {
+                ctx.strokeStyle = `rgba(0, 255, 0, ${(100 - i*30)/255})`;
+                ctx.lineWidth = 8 - i*2;
+                ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+            }
+            ctx.strokeStyle = COLORS.GREEN;
+            ctx.lineWidth = 4;
+            ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+        };
+
+        drawNeonLine(30, 30, 30, 850);
+        drawNeonLine(30, 30, 570, 30);
+        drawNeonLine(570, 30, 570, 850);
+
+        // Shooter Lane
+        ctx.fillStyle = '#0d0d0d';
+        ctx.fillRect(570, 30, 30, 920);
+        ctx.strokeStyle = COLORS.GREEN;
+        ctx.lineWidth = 3;
+        ctx.strokeRect(570, 30, 30, 920);
+
+        // Gate
+        ctx.strokeStyle = COLORS.RED;
+        ctx.lineWidth = 4;
+        ctx.beginPath(); ctx.moveTo(570, 850); ctx.lineTo(580, 860); ctx.lineTo(570, 870); ctx.stroke();
+
+        // Guide Walls
+        ctx.strokeStyle = COLORS.GREEN;
+        ctx.beginPath(); ctx.moveTo(30, 850); ctx.lineTo(150, 920); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(570, 850); ctx.lineTo(450, 920); ctx.stroke();
+
+        // Safety Posts
+        ctx.beginPath(); ctx.arc(55, 840, 20, 0, Math.PI*2); ctx.stroke();
+        ctx.beginPath(); ctx.arc(545, 840, 20, 0, Math.PI*2); ctx.stroke();
+    }
+
+    drawRamps(ctx) {
+        this.ramps.forEach(r => {
+            ctx.strokeStyle = r.color;
+            ctx.lineWidth = 8;
+            ctx.beginPath();
+            r.points.forEach((p, i) => { if(i===0) ctx.moveTo(p[0], p[1]); else ctx.lineTo(p[0], p[1]); });
+            ctx.stroke();
+            
+            ctx.strokeStyle = COLORS.BLACK;
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            r.points.forEach((p, i) => { if(i===0) ctx.moveTo(p[0], p[1]); else ctx.lineTo(p[0], p[1]); });
+            ctx.stroke();
+
+            // Entry arrow
+            ctx.fillStyle = r.color;
+            ctx.beginPath(); ctx.arc(r.entryX, r.entryY, 12, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = COLORS.BLACK;
+            ctx.beginPath(); ctx.arc(r.entryX, r.entryY, 8, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = r.color;
+            ctx.font = '10px Arial';
+            ctx.fillText('>', r.entryX-3, r.entryY+4);
+        });
+    }
+
+    drawLanes(ctx) {
+        this.lanes.forEach(l => {
+            ctx.strokeStyle = l.lit ? l.color : '#323232';
+            ctx.lineWidth = l.width;
+            ctx.beginPath(); ctx.moveTo(l.x1, l.y1); ctx.lineTo(l.x2, l.y2); ctx.stroke();
+            
+            const mx = (l.x1 + l.x2)/2, my = (l.y1 + l.y2)/2;
+            ctx.fillStyle = l.lit ? l.color : '#1e1e1e';
+            ctx.beginPath(); ctx.arc(mx, my, 6, 0, Math.PI*2); ctx.fill();
+        });
+    }
+
+    drawNeon(ctx) {
+        const t = Date.now();
+        ctx.font = '24px monospace';
+        
+        // Cyber
+        if (Math.sin(t / 200) > -0.2) {
+            ctx.shadowColor = COLORS.CYAN;
+            ctx.shadowBlur = 15;
+            ctx.fillStyle = COLORS.CYAN;
+            ctx.fillText('CYBER', 55, 65);
+        }
+        
+        // Pinball
+        if (Math.sin(t / 250 + 1) > -0.3) {
+            ctx.shadowColor = COLORS.MAGENTA;
+            ctx.shadowBlur = 15;
+            ctx.fillStyle = COLORS.MAGENTA;
+            ctx.fillText('PINBALL', 440, 65);
+        }
+        ctx.shadowBlur = 0;
+
+        ctx.font = '12px monospace';
+        ctx.fillStyle = COLORS.YELLOW;
+        ctx.fillText('DROP TARGETS', 230, 295);
+        ctx.fillText('BONUS', 50, 670);
+        
+        if (this.dropTargetsDown > 0) {
+            ctx.fillText(`${this.dropTargetsDown}/${this.dropTargetsTotal}`, 280, 340);
+        }
+    }
+
+    drawLights(ctx) {
+        this.lights.forEach((l, i) => {
+            const flicker = l.active || ((Date.now() + i*100) % 2000 < 100);
+            ctx.fillStyle = flicker ? l.color : '#1a1a1a';
+            if (flicker) {
+                ctx.shadowColor = l.color;
+                ctx.shadowBlur = 10;
+            }
+            ctx.beginPath(); ctx.arc(l.x, l.y, 5, 0, Math.PI*2); ctx.fill();
+            ctx.shadowBlur = 0;
+        });
+    }
+
+    drawCameras(ctx) {
+        this.cameras.forEach(c => {
+            ctx.fillStyle = COLORS.DARK_GRAY;
+            ctx.strokeStyle = '#444';
+            ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.arc(c.x, c.y, 18, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+            
+            // Lens
+            ctx.fillStyle = '#000';
+            ctx.beginPath(); ctx.arc(c.x, c.y, 10, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = 'rgba(0, 255, 255, 0.3)';
+            ctx.beginPath(); ctx.arc(c.x-3, c.y-3, 4, 0, Math.PI*2); ctx.fill();
+            
+            if (c.blink) {
+                ctx.fillStyle = COLORS.RED;
+                ctx.beginPath(); ctx.arc(c.x+12, c.y-12, 4, 0, Math.PI*2); ctx.fill();
+            }
+        });
+    }
+
+    drawWormholes(ctx) {
+        const t = Date.now()/1000;
+        this.wormholes.forEach(wh => {
+            const pulse = Math.sin(t*3)*5;
+            // Glow
+            const grad = ctx.createRadialGradient(wh.x, wh.y, 1, wh.x, wh.y, wh.r + 20 + pulse);
+            grad.addColorStop(0, wh.color);
+            grad.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = grad;
+            ctx.beginPath(); ctx.arc(wh.x, wh.y, wh.r + 20 + pulse, 0, Math.PI*2); ctx.fill();
+            
+            // Black center
+            ctx.fillStyle = COLORS.BLACK;
+            ctx.beginPath(); ctx.arc(wh.x, wh.y, wh.r, 0, Math.PI*2); ctx.fill();
+
+            // Swirls
+            for(let i=0; i<8; i++) {
+                const a = t*3 + i * Math.PI*2/8;
+                const r = wh.r * 0.7;
+                ctx.fillStyle = 'rgba(255,0,255,0.5)';
+                ctx.beginPath(); ctx.arc(wh.x + Math.cos(a)*r, wh.y + Math.sin(a)*r, 5, 0, Math.PI*2); ctx.fill();
+            }
+        });
+    }
+
+    drawObstacles(ctx) {
+        this.obstacles.forEach(obs => {
+            if (obs.type === 'drop_target' && obs.knockedDown) {
+                ctx.fillStyle = '#1e1e1e';
+                ctx.strokeStyle = '#3c3c3c';
+                ctx.beginPath(); ctx.arc(obs.x, obs.y, obs.r, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                return;
+            }
+
+            const pulse = (obs.hits > 0) ? Math.sin(Date.now()/20)*5 : 0;
+            
+            if (obs.type === 'robot') {
+                if (obs.hits > 0) {
+                    ctx.fillStyle = 'rgba(0,255,0,0.4)';
+                    ctx.beginPath(); ctx.rect(obs.x-obs.r-5, obs.y-obs.r-5, obs.r*2+10, obs.r*2+10); ctx.fill();
+                }
+                ctx.fillStyle = '#1a1a1a';
+                ctx.strokeStyle = COLORS.GREEN;
+                ctx.lineWidth = 2;
+                ctx.fillRect(obs.x-obs.r, obs.y-obs.r, obs.r*2, obs.r*2);
+                ctx.strokeRect(obs.x-obs.r, obs.y-obs.r, obs.r*2, obs.r*2);
+                
+                // Eyes
+                ctx.fillStyle = `rgba(0, ${Math.floor(150 + Math.random()*105)}, 0, 1)`;
+                ctx.fillRect(obs.x-15, obs.y-10, 10, 10);
+                ctx.fillRect(obs.x+5, obs.y-10, 10, 10);
+                
+            } else if (obs.type === 'circuit') {
+                ctx.fillStyle = COLORS.DARK_GREEN;
+                ctx.strokeStyle = COLORS.GREEN;
+                ctx.fillRect(obs.x-obs.r, obs.y-obs.r, obs.r*2, obs.r*2);
+                ctx.strokeRect(obs.x-obs.r, obs.y-obs.r, obs.r*2, obs.r*2);
+                
+                // Lines
+                ctx.beginPath();
+                ctx.moveTo(obs.x-obs.r, obs.y); ctx.lineTo(obs.x+obs.r, obs.y);
+                ctx.moveTo(obs.x, obs.y-obs.r); ctx.lineTo(obs.x, obs.y+obs.r);
+                ctx.stroke();
+
+            } else if (obs.type === 'bumper') {
+                if (obs.hits > 0) {
+                   ctx.fillStyle = `rgba(255,0,255,0.5)`;
+                   ctx.beginPath(); ctx.arc(obs.x, obs.y, obs.r+pulse+10, 0, Math.PI*2); ctx.fill();
+                }
+                ctx.fillStyle = '#222';
+                ctx.beginPath(); ctx.arc(obs.x, obs.y, obs.r, 0, Math.PI*2); ctx.fill();
+                // Rings
+                [COLORS.MAGENTA, COLORS.CYAN, COLORS.YELLOW].forEach((c, i) => {
+                    ctx.strokeStyle = c;
+                    ctx.beginPath(); ctx.arc(obs.x, obs.y, obs.r * (0.9 - i*0.2), 0, Math.PI*2); ctx.stroke();
+                });
+
+            } else if (obs.type === 'drop_target') {
+                ctx.fillStyle = '#ffcc00';
+                ctx.strokeStyle = '#ffff00';
+                ctx.fillRect(obs.x-obs.r, obs.y-obs.r*2, obs.r*2, obs.r*2);
+                ctx.strokeRect(obs.x-obs.r, obs.y-obs.r*2, obs.r*2, obs.r*2);
+                
+            } else if (obs.type === 'slingshot') {
+                ctx.fillStyle = '#c800c8';
+                ctx.strokeStyle = COLORS.MAGENTA;
+                ctx.beginPath();
+                if (obs.x < 300) {
+                    ctx.moveTo(obs.x-obs.r, obs.y+obs.r);
+                    ctx.lineTo(obs.x-obs.r, obs.y-obs.r);
+                    ctx.lineTo(obs.x+obs.r, obs.y);
+                } else {
+                    ctx.moveTo(obs.x+obs.r, obs.y+obs.r);
+                    ctx.lineTo(obs.x+obs.r, obs.y-obs.r);
+                    ctx.lineTo(obs.x-obs.r, obs.y);
+                }
+                ctx.closePath();
+                ctx.fill(); ctx.stroke();
+            }
+
+            if(obs.hits > 0) obs.hits--;
+        });
+    }
+
+    drawFlippers(ctx) {
+        const drawSingleFlipper = (x, y, flip, isRight) => {
+            const len = 100;
+            const angle = (isRight ? Math.PI : 0) + flip.angle;
+            const endX = x + len * Math.cos(angle);
+            const endY = y + len * Math.sin(angle);
+            
+            const perp = angle + Math.PI/2;
+            const w = 10;
+            const dx = w * Math.cos(perp);
+            const dy = w * Math.sin(perp);
+
+            ctx.fillStyle = COLORS.DARK_GRAY;
+            ctx.strokeStyle = COLORS.GREEN;
+            ctx.lineWidth = 2;
+            
+            ctx.beginPath();
+            ctx.moveTo(x + dx, y + dy);
+            ctx.lineTo(x - dx, y - dy);
+            ctx.lineTo(endX - dx, endY - dy);
+            ctx.lineTo(endX + dx, endY + dy);
+            ctx.closePath();
+            ctx.fill(); ctx.stroke();
+
+            ctx.fillStyle = COLORS.GREEN;
+            ctx.beginPath(); ctx.arc(x, y, 8, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(endX, endY, 8, 0, Math.PI*2); ctx.fill();
+        };
+
+        drawSingleFlipper(150, 920, this.leftFlipper, false);
+        drawSingleFlipper(450, 920, this.rightFlipper, true);
+    }
+
+    drawBall(ctx) {
+        // Glow
+        for(let i=0; i<4; i++) {
+            const size = this.ball.r + 4 - i;
+            ctx.fillStyle = `rgba(0, 255, 0, ${(200 - i*50)/255})`;
+            ctx.beginPath(); ctx.arc(this.ball.x, this.ball.y, size, 0, Math.PI*2); ctx.fill();
+        }
+        ctx.fillStyle = COLORS.GREEN;
+        ctx.beginPath(); ctx.arc(this.ball.x, this.ball.y, this.ball.r, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.beginPath(); ctx.arc(this.ball.x-3, this.ball.y-3, 3, 0, Math.PI*2); ctx.fill();
+    }
+
+    drawParticles(ctx) {
+        this.particles.forEach(p => {
+            ctx.globalAlpha = p.life / p.maxLife;
+            ctx.fillStyle = p.color;
+            ctx.beginPath(); ctx.arc(p.x, p.y, p.size * (p.life/p.maxLife), 0, Math.PI*2); ctx.fill();
+        });
+        ctx.globalAlpha = 1.0;
+    }
+
+    drawLaunchMeter(ctx) {
+        if (this.inShooter) {
+            ctx.fillStyle = 'rgba(0,0,0,0.7)';
+            ctx.fillRect(655, 640, 40, 150); // This would be off-canvas in 600 width, moved logic
+            
+            // Adjust to be visible inside 600 width
+            const meterX = 575, meterY = 700;
+            const h = (this.launchPower/100) * 100;
+            ctx.fillStyle = COLORS.RED;
+            ctx.fillRect(meterX+5, meterY + 100 - h, 20, h);
+            ctx.strokeStyle = COLORS.GREEN;
+            ctx.strokeRect(meterX, meterY, 30, 100);
+            
+            ctx.save();
+            ctx.translate(590, 450);
+            ctx.rotate(-Math.PI/2);
+            ctx.fillStyle = COLORS.GREEN;
+            ctx.font = '16px monospace';
+            ctx.fillText("LAUNCH", 0, 0);
+            ctx.restore();
+        }
+    }
+
+    drawUI(ctx) {
+        // Score
+        ctx.fillStyle = COLORS.BLACK;
+        ctx.fillRect(20, 10, 200, 40);
+        ctx.strokeStyle = COLORS.GREEN;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(20, 10, 200, 40);
+        ctx.fillStyle = COLORS.GREEN;
+        ctx.font = '24px monospace';
+        ctx.fillText(`SCORE: ${this.score.toLocaleString()}`, 30, 38);
+
+        // Balls
+        const ballsText = this.infiniteBalls ? "BALLS: ∞" : `BALLS: ${this.ballsLeft}`;
+        ctx.fillStyle = COLORS.BLACK;
+        ctx.fillRect(400, 10, 180, 40);
+        ctx.strokeStyle = this.infiniteBalls ? COLORS.CYAN : COLORS.GREEN;
+        ctx.strokeRect(400, 10, 180, 40);
+        ctx.fillStyle = this.infiniteBalls ? COLORS.CYAN : COLORS.GREEN;
+        ctx.fillText(ballsText, 410, 38);
+
+        // Combo
+        if (this.combo > 2) {
+            ctx.fillStyle = COLORS.BLACK;
+            ctx.fillRect(250, 10, 140, 40);
+            ctx.strokeStyle = COLORS.MAGENTA;
+            ctx.strokeRect(250, 10, 140, 40);
+            ctx.fillStyle = COLORS.MAGENTA;
+            ctx.fillText(`COMBO: ${this.combo}X`, 260, 38);
+        }
+
+        // Demo
+        if (this.demoMode) {
+            const pulse = 100 + Math.sin(Date.now()/300)*50;
+            ctx.fillStyle = `rgba(0, ${pulse}, ${pulse}, 1)`;
+            ctx.font = '48px monospace';
+            ctx.fillText("DEMO MODE", 180, 100);
+        }
+    }
+
+    drawGameOver(ctx) {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+        ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        
+        ctx.font = '48px monospace';
+        ctx.fillStyle = COLORS.RED;
+        ctx.textAlign = 'center';
+        ctx.fillText('⚠ SYSTEM FAILURE ⚠', SCREEN_WIDTH/2, SCREEN_HEIGHT/2 - 80);
+        
+        ctx.font = '36px monospace';
+        ctx.fillStyle = COLORS.GREEN;
+        ctx.fillText(`FINAL SCORE: ${this.score.toLocaleString()}`, SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
+        
+        ctx.strokeStyle = COLORS.GREEN;
+        ctx.strokeRect(SCREEN_WIDTH/2 - 150, SCREEN_HEIGHT/2 + 50, 300, 60);
+        ctx.font = '24px monospace';
+        ctx.fillText('PRESS R TO RESTART', SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 90);
+        ctx.textAlign = 'left';
+    }
+
+    // --- Input ---
+    
+    handleKeyDown(e) {
+        this.keys[e.key] = true;
+        
+        if (e.key === 'r' || e.key === 'R') {
+            if (this.gameOver) this.resetGame();
+        }
+        if (e.key === 'i' || e.key === 'I') this.infiniteBalls = !this.infiniteBalls;
+        if (e.key === 'F1') {
+            this.demoMode = !this.demoMode;
+            if (this.demoMode && !this.gameActive) {
+                this.gameActive = true;
+                this.infiniteBalls = true;
+                this.launchBall();
+            }
+        }
+        if (e.key === 'Enter') {
+            if (!this.gameActive && !this.gameOver) this.launchBall();
+        }
+    }
+
+    handleKeyUp(e) {
+        this.keys[e.key] = false;
+        
+        if (!this.demoMode && (e.key === ' ' || e.key === 'ArrowDown')) {
+            if (this.launching) this.launchBall();
+        }
+    }
+}
+
+// --- Initialization ---
+
+const canvas = document.getElementById('pinballCanvas');
+const overlay = document.getElementById('overlay');
+let game = null;
+
+// Audio context requires user interaction to start
+overlay.addEventListener('click', () => {
+    audio.init();
+    overlay.style.opacity = '0';
+    setTimeout(() => {
+        overlay.style.display = 'none';
+        if (!game) {
+            game = new PinballGame(canvas);
+            
+            window.addEventListener('keydown', (e) => {
+                if(["Space","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.code) > -1) {
+                    e.preventDefault(); // Stop scrolling
+                }
+                game.handleKeyDown(e);
+            });
+
+            window.addEventListener('keyup', (e) => game.handleKeyUp(e));
+        }
+    }, 500);
+});
+
+</script>
+</body>
+</html>
