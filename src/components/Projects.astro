@@ -13,10 +13,12 @@ import CardGrid from "./CardGrid.astro";
       <p>these are my favourite projects :)</p>
       <CardGrid>
         <Card
-          title="BatteryManager"
-          content="coconutBattery alternative for macOS, completely free, written in SwiftUI"
-          link="https://github.com/JoshAtticus/BatteryManager"
-          linkTitle="See on GitHub"
+          title="Compressor"
+          content="Compressor is a lightning fast, ad free, super lightweight native video compressor for Android."
+          links={[
+            { url: "https://compress.joshattic.us", title: "Website" },
+            { url: "https://github.com/JoshAtticus/Compressor", title: "See on GitHub" },
+          ]}
         />
         <Card
           title="neubot"
